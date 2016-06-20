@@ -7,4 +7,4 @@ var MissedCall = new mongoose.Schema({
   phoneNumber: String
 });
 
-module.exports = mongoose.model('missedCall', MissedCall);
+module.exports = mongoose.model('MissedCall', MissedCall);

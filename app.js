@@ -9,6 +9,7 @@ var express = require('express'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   callRouter = require('./routes/call'),
+  MissedCall = require('./models/call'),
   app = express();
 
 // view engine setup
@@ -24,7 +25,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
 app.get('/', function (req, res) {
-  res.render('index');
+  MissedCall.find({}).sort('-date').exec(function(err, docs) {
+    res.render('index', {'missedCalls': docs});
+  });
 });
 app.use('/call', callRouter);
 

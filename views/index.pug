@@ -20,3 +20,11 @@ block content
         div.panel-heading
           h3.panel-title.
             Missed Calls
+      table.table
+        tbody
+          each missedCall in missedCalls
+            tr
+              td
+                strong= missedCall.selectedProduct
+              td
+                a(href= 'tel:' + missedCall.phoneNumber)= missedCall.phoneNumber
