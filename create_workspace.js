@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-var program = require('commander');
+var program   = require('commander'),
+    workspace = require('./lib/workspace');
 
 var hostValue, bobNumberValue, aliceNumberValue;
 
@@ -21,3 +22,9 @@ if(!hostValue || !bobNumberValue || !aliceNumberValue){
   program.outputHelp();
   process.exit(1);
 }
+
+workspace.create('Twilio Workspace').then(function(call) {
+      console.log('Call success! Call SID: '+call.sid);
+}, function(error) {
+      console.error('Call failed!  Reason: '+error.message);
+});
