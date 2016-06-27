@@ -23,7 +23,7 @@ if(!hostValue || !bobNumberValue || !aliceNumberValue){
   process.exit(1);
 }
 
-workspace.create('Twilio Workspace').then(function(call) {
+workspace.findByName('Twilio Workspace').then(function(call) {
       console.log('Call success! Call SID: '+call.sid);
 }, function(error) {
       console.error('Call failed!  Reason: '+error.message);
