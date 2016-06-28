@@ -2,6 +2,7 @@
 "use strict";
 
 var program   = require('commander'),
+    Q = require('q'),
     workspaceHelper = require('./lib/workspace'),
     util = require('util'),
     fs = require('fs');
@@ -41,9 +42,9 @@ workspaceHelper.deleteByName(workspaceJson.name).then(function(){
     console.log('Workspace "%s" created, eventCallback is %s', workspaceJson.name, eventCallback);
 
     workspace.activities.list().then(function(response){
-      var idleActivity = response.activities.find(function(activity){return activity.friendly_name === 'Idle';});
-      var busyActivity = response.activities.find(function(activity){return activity.friendly_name === 'Busy';});
-      var reservedActivity = response.activities.find(function(activity){return activity.friendly_name === 'Reserved';});
+      var idleActivity = response.activities.find(byName('Idle'));
+      var busyActivity = response.activities.find(byName('Busy'));
+      var reservedActivity = response.activities.find(byName('Reserved'));
 
       workspaceJson.workers.forEach(function (workerJson) {
         var workerAttributes = util.format(JSON.stringify(workerJson.attributes), phoneNumbers[workerJson.name]);
@@ -55,16 +56,23 @@ workspaceHelper.deleteByName(workspaceJson.name).then(function(){
         }).catch(exitErrorHandler);
       });
 
-      workspaceJson.task_queues.forEach(function(taskQueueJson){
-        workspace.taskQueues.create({
+      Q.all(workspaceJson.task_queues.map(function(taskQueueJson){
+        return workspace.taskQueues.create({
           friendlyName: taskQueueJson.name,
           targetWorkers: taskQueueJson.targetWorkers,
           assignmentActivitySid: busyActivity.sid,
           reservationActivitySid: reservedActivity.sid
-        }).then(function(response){
-          console.log('"%s" Task Queue created, targeting "%s".', response.friendly_name, response.target_workers);
-        }).catch(exitErrorHandler);
-      });
+        }).then(function(taskQueue){
+          console.log('"%s" Task Queue created, targeting "%s".', taskQueue.friendly_name, taskQueue.target_workers);
+          return taskQueue;
+        });
+      })).catch(exitErrorHandler);
     });
   }).catch(exitErrorHandler);
 }).catch(exitErrorHandler);
+
+function byName(name){
+  return function(item) {
+    return item.friendly_name === name;
+  };
+}
