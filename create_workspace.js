@@ -6,7 +6,7 @@ var program   = require('commander'),
     util = require('util'),
     fs = require('fs');
 
-var hostValue, bobNumberValue, aliceNumberValue;
+var hostValue, phoneNumbers;
 
 program
   .version('0.0.1')
@@ -14,13 +14,15 @@ program
   .description('Creates and configures a Twilio\'s TaskRouter Workspace.')
   .action(function (host, bobNumber, aliceNumber){
     hostValue        = host;
-    bobNumberValue   = bobNumber;
-    aliceNumberValue = aliceNumber;
+    phoneNumbers = {
+      Bob: bobNumber,
+      Alice: aliceNumber
+    };
   });
 
 program.parse(process.argv);
 
-if(!hostValue || !bobNumberValue || !aliceNumberValue){
+if(!hostValue || !phoneNumbers){
   program.outputHelp();
   process.exit(1);
 }
@@ -34,8 +36,16 @@ var workspaceJson = JSON.parse(fs.readFileSync('workspace.json', 'utf8'));
 
 workspaceHelper.deleteByName(workspaceJson.name).then(function(){
   var eventCallback = util.format(workspaceJson.event_callback, hostValue);
-  console.log(eventCallback);
-  return workspaceHelper.create(workspaceJson.name, eventCallback).then(function(workspaceWrapper){
-    console.log(workspaceWrapper);
+  return workspaceHelper.create(workspaceJson.name, eventCallback).then(function(workspace){
+    console.log('Workspace "%s" created, eventCallback is %s', workspaceJson.name, eventCallback);
+
+    workspaceJson.workers.forEach(function (workerJson) {
+      var workerAttributes = util.format(JSON.stringify(workerJson.attributes), phoneNumbers[workerJson.name]);
+      console.log('Creating worker %s with attributes %s', workerJson.name, workerAttributes);
+      workspace.workers.create({
+        friendlyName: workerJson.name,
+        attributes: workerAttributes
+      }).catch(exitErrorHandler);
+    });
   }).catch(exitErrorHandler);
 }).catch(exitErrorHandler);

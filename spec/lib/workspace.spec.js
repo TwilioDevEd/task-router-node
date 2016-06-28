@@ -23,7 +23,7 @@ describe('workspace', function () {
     }); 
 
     it('can create a workspace', function () {
-      var createWorkspaceStub = sinon.stub();
+      var createWorkspaceStub = sinon.stub().returns(Q.resolve({}));
       workspacesStub.create = createWorkspaceStub;
 
       var workspace = require('../../lib/workspace');
