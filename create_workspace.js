@@ -5,6 +5,7 @@ var program   = require('commander'),
     Q = require('q'),
     workspaceHelper = require('./lib/workspace'),
     util = require('util'),
+    wb = require('twilio/lib/resources/task_router/WorkflowBuilder'),
     fs = require('fs');
 
 var hostValue, phoneNumbers;
@@ -63,10 +64,42 @@ workspaceHelper.deleteByName(workspaceJson.name).then(function(){
           assignmentActivitySid: busyActivity.sid,
           reservationActivitySid: reservedActivity.sid
         }).then(function(taskQueue){
-          console.log('"%s" Task Queue created, targeting "%s".', taskQueue.friendly_name, taskQueue.target_workers);
+          console.log('"%s" Task Queue created, using expression "%s".', taskQueue.friendly_name, taskQueue.target_workers);
           return taskQueue;
         });
-      })).catch(exitErrorHandler);
+      })).then(function(createdQueues){
+        var rules = workspaceJson.workflow.routingConfiguration.map(function(configJson){
+          var target = new wb.WorkflowRuleTarget({
+            queue: createdQueues.find(byName(configJson.targetTaskQueue)).sid
+          });
+          return new wb.WorkflowRule({
+            expression: configJson.expression,
+            targets: [target]
+          });
+        });
+
+        var defaultTarget = new wb.WorkflowRuleTarget({
+          queue: createdQueues.find(byName('Default')).sid
+        });
+
+        var taskRouting = new wb.TaskRoutingConfiguration({
+          filters : rules,
+          default_filter : defaultTarget
+        });
+        var workflowConfiguration = new wb.WorkflowConfiguration({
+          taskRouting: taskRouting
+        }).toJSON();
+
+        workspace.workflows.create({
+          friendlyName: workspaceJson.workflow.name,
+          assignmentCallbackUrl: util.format(workspaceJson.workflow.callback, hostValue),
+          fallbackAssignmentCallbackUrl: util.format(workspaceJson.workflow.callback, hostValue),
+          taskReservationTimeout: workspaceJson.workflow.timeout,
+          configuration: workflowConfiguration
+        }).then(function(workflow){
+          console.log('Worflow "%s" created.', workflow.friendly_name);
+        }).catch(exitErrorHandler);
+      }).catch(exitErrorHandler);
     });
   }).catch(exitErrorHandler);
 }).catch(exitErrorHandler);
