@@ -11,7 +11,7 @@ describe('workspace', function () {
     var workspacesStub = sinon.stub();
     var twilioMock = {
       'TaskRouterClient': function () {
-        return { workspaces: workspacesStub };
+        return { workspaces: workspacesStub, workspace: workspacesStub };
       }
     };
 
@@ -45,6 +45,21 @@ describe('workspace', function () {
       workspace.findByName('My Workspace').then(function(found){
         expect(listWorkspaceStub.called).to.be.equal(true);
         expect(found.friendly_name).to.be.equal('My Workspace');
+        done();
+      }, function(err) { done(err); }).done();
+    });
+
+    it('can delete a workspace by name', function (done) {
+      var listWorkspaceStub = sinon.stub().returns(Q.resolve({
+        workspaces: [{friendly_name: 'My Workspace'}, {friendly_name: 'Other Workspace'}]
+      }));
+      var deleteWorkspaceStub = sinon.stub();
+      workspacesStub.list = listWorkspaceStub;
+      workspacesStub.delete = deleteWorkspaceStub;
+
+      var workspace = require('../../lib/workspace');
+      workspace.deleteByName('My Workspace').then(function(){
+        expect(deleteWorkspaceStub.called).to.be.equal(true);
         done();
       }, function(err) { done(err); }).done();
     });

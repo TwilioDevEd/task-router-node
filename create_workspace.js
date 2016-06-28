@@ -23,8 +23,14 @@ if(!hostValue || !bobNumberValue || !aliceNumberValue){
   process.exit(1);
 }
 
-workspace.findByName('Twilio Workspace').then(function(call) {
-      console.log('Call success! Call SID: '+call.sid);
-}, function(error) {
-      console.error('Call failed!  Reason: '+error.message);
-});
+function exitErrorHandler(error) {
+  console.error('Error while creating workspace:');
+  console.error(error);
+  process.exit(1);
+}
+
+workspace.deleteByName('Twilio Workspace').then(function(){
+  return workspace.create('Twilio Workspace', hostValue + '/events').then(function(workspaceWrapper){
+    console.log(workspaceWrapper);
+  }).catch(exitErrorHandler);
+}).catch(exitErrorHandler);
