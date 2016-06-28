@@ -2,7 +2,9 @@
 "use strict";
 
 var program   = require('commander'),
-    workspace = require('./lib/workspace');
+    workspaceHelper = require('./lib/workspace'),
+    util = require('util'),
+    fs = require('fs');
 
 var hostValue, bobNumberValue, aliceNumberValue;
 
@@ -28,9 +30,12 @@ function exitErrorHandler(error) {
   console.error(error);
   process.exit(1);
 }
+var workspaceJson = JSON.parse(fs.readFileSync('workspace.json', 'utf8'));
 
-workspace.deleteByName('Twilio Workspace').then(function(){
-  return workspace.create('Twilio Workspace', hostValue + '/events').then(function(workspaceWrapper){
+workspaceHelper.deleteByName(workspaceJson.name).then(function(){
+  var eventCallback = util.format(workspaceJson.event_callback, hostValue);
+  console.log(eventCallback);
+  return workspaceHelper.create(workspaceJson.name, eventCallback).then(function(workspaceWrapper){
     console.log(workspaceWrapper);
   }).catch(exitErrorHandler);
 }).catch(exitErrorHandler);

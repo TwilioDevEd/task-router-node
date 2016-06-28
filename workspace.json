@@ -1,6 +1,6 @@
 {
   "name": "Twilio Workspace",
-  "event_callback": "%(host)s/events",
+  "event_callback": "%s/events",
   "workers": [
     {
       "name": "Bob",
@@ -8,7 +8,7 @@
         "products": [
           "ProgrammableSMS"
         ],
-        "contact_uri": "%(bob_number)s"
+        "contact_uri": "%s"
       }
     },
     {
@@ -17,7 +17,7 @@
         "products": [
           "ProgrammableVoice"
         ],
-        "contact_uri": "%(alice_number)s"
+        "contact_uri": "%s"
       }
     }
   ],
@@ -55,7 +55,7 @@
   ],
   "workflow": {
       "name": "Sales",
-      "callback": "%(host)s/assignment",
+      "callback": "%s/assignment",
       "timeout": "15",
       "routingConfiguration": [
         {
