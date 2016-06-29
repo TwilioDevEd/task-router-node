@@ -8,7 +8,9 @@ var express = require('express'),
 router.post('/incoming/', function (req, res) {
   var twimlResponse = new twilio.TwimlResponse();
   twimlResponse.gather({
-    numDigits: 1
+    numDigits: 1,
+    action: '/call/enqueue',
+    method: 'POST'
   });
   res.type('text/xml');
   res.send(twimlResponse.toString());
