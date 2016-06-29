@@ -33,7 +33,10 @@ router.post('/enqueue/', function (req, res) {
 // POST /call/assignment
 router.post('/assignment/', function (req, res) {
   res.type('application/json');
-  res.send({instruction: "dequeue"});
+  res.send({
+    instruction: "dequeue",
+    post_work_activity_sid: process.env.POST_WORK_ACTIVITY_SID
+  });
 });
 
 module.exports = router;

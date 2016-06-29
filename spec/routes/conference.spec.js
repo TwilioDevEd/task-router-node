@@ -67,6 +67,14 @@ describe('TaskRouter matched a Task to a Worker and POSTs to /call/assignment', 
       expect(response.body.instruction).to.equal("dequeue");
     }).expect(200, done);
   });
+
+  it('will specify an Activity SID for the Worker to be set after this call', function(done) {
+    var testApp = supertest(app);
+    process.env.POST_WORK_ACTIVITY_SID = 'SID123';
+    testApp.post('/call/assignment').expect(function (response) {
+      expect(response.body.post_work_activity_sid).to.equal("SID123");
+    }).expect(200, done);
+  });
 });
 
 describe('missed calls', function () {
