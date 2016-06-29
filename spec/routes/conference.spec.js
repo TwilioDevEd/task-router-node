@@ -60,6 +60,15 @@ describe('user pressed a key, making Twilio POST to /call/enqueue', function() {
   });
 });
 
+describe('TaskRouter matched a Task to a Worker and POSTs to /call/assignment', function () {
+  it('will instruct to dequeue this call', function(done) {
+    var testApp = supertest(app);
+    testApp.post('/call/assignment').expect(function (response) {
+      expect(response.body.instruction).to.equal("dequeue");
+    }).expect(200, done);
+  });
+});
+
 describe('missed calls', function () {
 
   before(function (done) {

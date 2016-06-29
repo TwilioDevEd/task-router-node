@@ -30,4 +30,10 @@ router.post('/enqueue/', function (req, res) {
   res.send(twimlResponse.toString());
 });
 
+// POST /call/assignment
+router.post('/assignment/', function (req, res) {
+  res.type('application/json');
+  res.send({instruction: "dequeue"});
+});
+
 module.exports = router;
