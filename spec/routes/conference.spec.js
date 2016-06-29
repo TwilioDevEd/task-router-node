@@ -15,12 +15,21 @@ describe('user calls and Twilio POSTs to /call/incoming', function() {
       expect($('gather').attr('numdigits')).to.equal('1');
     }).expect(200, done);
   });
+
   it('will ask Twilio to POST the gathered digit to /call/enqueue', function(done) {
     var testApp = supertest(app);
     testApp.post('/call/incoming', {}).expect(function (response) {
       var $ = cheerio.load(response.text);
       expect($('gather').attr('method')).to.equal('POST');
       expect($('gather').attr('action')).to.equal('/call/enqueue');
+    }).expect(200, done);
+  });
+
+  it('will Say the options for the user inside of a Gather verb', function(done) {
+    var testApp = supertest(app);
+    testApp.post('/call/incoming', {}).expect(function (response) {
+      var $ = cheerio.load(response.text);
+      expect($('gather say').text()).to.equal('For Programmable SMS, press one. For Voice, press any other key.');
     }).expect(200, done);
   });
 });

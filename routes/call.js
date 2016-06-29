@@ -11,6 +11,8 @@ router.post('/incoming/', function (req, res) {
     numDigits: 1,
     action: '/call/enqueue',
     method: 'POST'
+  }, function(gatherNode) {
+    gatherNode.say('For Programmable SMS, press one. For Voice, press any other key.');
   });
   res.type('text/xml');
   res.send(twimlResponse.toString());
