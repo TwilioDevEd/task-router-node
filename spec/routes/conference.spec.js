@@ -7,7 +7,7 @@ var expect = require('chai').expect,
   MissedCall = require('../../models/call'),
   mongoose = require('mongoose');
 
-describe('user calls and Twilio POSTs to /call/incoming', function() {
+describe('user calls and Twilio voice webhook POSTs to /call/incoming', function() {
   it('will gather a digit', function(done) {
     var testApp = supertest(app);
     testApp.post('/call/incoming', {}).expect(function (response) {
@@ -30,6 +30,24 @@ describe('user calls and Twilio POSTs to /call/incoming', function() {
     testApp.post('/call/incoming', {}).expect(function (response) {
       var $ = cheerio.load(response.text);
       expect($('gather say').text()).to.equal('For Programmable SMS, press one. For Voice, press any other key.');
+    }).expect(200, done);
+  });
+});
+
+describe('user pressed a key, making Twilio POST to /call/enqueue', function() {
+  it('will choose ProgrammableSMS as Task attribute if pressed key is 1', function(done) {
+    var testApp = supertest(app);
+    testApp.post('/call/enqueue').send({Digits: '1'}).expect(function (response) {
+      var $ = cheerio.load(response.text);
+      expect($('enqueue task').text()).to.equal('{"selected_product": "ProgrammableSMS"}');
+    }).expect(200, done);
+  });
+
+  it('will choose ProgrammableVoice as Task attribute if pressed key is not 1', function(done) {
+    var testApp = supertest(app);
+    testApp.post('/call/enqueue').send({'Digits': '#'}).expect(function (response) {
+      var $ = cheerio.load(response.text);
+      expect($('enqueue task').text()).to.equal('{"selected_product": "ProgrammableVoice"}');
     }).expect(200, done);
   });
 });
