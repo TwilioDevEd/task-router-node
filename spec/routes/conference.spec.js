@@ -53,9 +53,10 @@ describe('user pressed a key, making Twilio POST to /call/enqueue', function() {
 
   it('will use workflowSid as Enqueue verb attribute for TaskRouter integration', function (done) {
     var testApp = supertest(app);
+    process.env.WORKFLOW_SID = 'SID123';
     testApp.post('/call/enqueue').send({'Digits': '#'}).expect(function (response) {
       var $ = cheerio.load(response.text);
-      expect($('enqueue').attr('workflowsid')).to.equal('123');
+      expect($('enqueue').attr('workflowsid')).to.equal('SID123');
     }).expect(200, done);
   });
 });
