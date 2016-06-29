@@ -2,12 +2,16 @@
 
 var express = require('express'),
   router = express.Router(),
-  twimlGenerator = require('../lib/twiml-generator');
+  twilio = require('twilio');
 
-// POST /conference/wait
-router.post('/wait/', function (req, res) {
+// POST /call/incoming
+router.post('/incoming/', function (req, res) {
+  var twimlResponse = new twilio.TwimlResponse();
+  twimlResponse.gather({
+    numDigits: 1
+  });
   res.type('text/xml');
-  res.send(twimlGenerator.waitResponseTwiml().toString());
+  res.send(twimlResponse.toString());
 });
 
 module.exports = router;

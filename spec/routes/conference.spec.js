@@ -7,6 +7,16 @@ var expect = require('chai').expect,
   MissedCall = require('../../models/call'),
   mongoose = require('mongoose');
 
+describe('user calls and Twilio POSTs to /call/incoming', function() {
+  it('will gather a digit', function(done) {
+    var testApp = supertest(app);
+    testApp.post('/call/incoming', {}).expect(function (response) {
+      var $ = cheerio.load(response.text);
+      expect($('gather').attr('numdigits')).to.equal('1');
+    }).expect(200, done);
+  });
+});
+
 describe('missed calls', function () {
 
   before(function (done) {
