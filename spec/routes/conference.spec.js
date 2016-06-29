@@ -50,6 +50,14 @@ describe('user pressed a key, making Twilio POST to /call/enqueue', function() {
       expect($('enqueue task').text()).to.equal('{"selected_product": "ProgrammableVoice"}');
     }).expect(200, done);
   });
+
+  it('will use workflowSid as Enqueue verb attribute for TaskRouter integration', function (done) {
+    var testApp = supertest(app);
+    testApp.post('/call/enqueue').send({'Digits': '#'}).expect(function (response) {
+      var $ = cheerio.load(response.text);
+      expect($('enqueue').attr('workflowsid')).to.equal('123');
+    }).expect(200, done);
+  });
 });
 
 describe('missed calls', function () {

@@ -23,7 +23,7 @@ router.post('/enqueue/', function (req, res) {
   var pressedKey = req.body.Digits;
   var twimlResponse = new twilio.TwimlResponse();
   var selectedProduct = (pressedKey === '1')? 'ProgrammableSMS':'ProgrammableVoice';
-  twimlResponse.enqueue(null, function(enqueueNode) {
+  twimlResponse.enqueue({workflowSid: process.env.WORKFLOW_SID}, function(enqueueNode) {
     enqueueNode.task('{"selected_product": "' + selectedProduct + '"}');
   });
   res.type('text/xml');
