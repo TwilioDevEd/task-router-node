@@ -2,18 +2,29 @@
 
 var expect = require('chai').expect,
   supertest = require('supertest'),
-  cheerio = require('cheerio'),
   mongoose = require('mongoose'),
   MissedCall = require('../../models/call'),
-  app = require('../../app.js');
+  sinon = require('sinon'),
+  util = require('util'),
+  app = require('../../app.js'),
+  mockery = require('mockery');
 
 
 describe('Record a MissedCall according to event type', function() {
+  var twilioClientStub = sinon.stub();
+  var callStub = sinon.stub();
+  twilioClientStub.calls = sinon.stub().returns(callStub);
+  callStub.update = sinon.stub();
+
   before(function (done) {
+    mockery.enable({ useCleanCache: true });
+    mockery.warnOnUnregistered(false);
+    mockery.registerMock('twilio', sinon.stub().returns(twilioClientStub));
     mongoose.connect(require('../../lib/db-connection')(), done);
   });
   
   after(function (done) {
+    mockery.disable();
     mongoose.disconnect(done);
   });
 
@@ -38,6 +49,25 @@ describe('Record a MissedCall according to event type', function() {
       testApp.post('/events').send({EventType: 'task.canceled', TaskAttributes: this.taskAttributes}).end(function () {
         MissedCall.count({}, function(err, docsCount) {
           expect(docsCount).to.be.equals(1);
+          done();
+        });
+      });
+    });
+
+    it('will store a missed call and redirect live call into voicemail if no agent available', function(done) {
+      var testApp = supertest(app);
+      var voicemailAddress = 'email@example.com';
+      var quotedMessage = 'Sorry, All agents are busy. Please leave a message. We\'ll call you as soon as possible';
+      process.env.MISSED_CALLS_EMAIL_ADDRESS = voicemailAddress;
+      var expectedVoicemailUrl = util.format("http://twimlets.com/voicemail?Email=%s&%s", voicemailAddress, quotedMessage);
+      testApp.post('/events').send({EventType: 'workflow.timeout', TaskAttributes: this.taskAttributes}).end(function () {
+        MissedCall.count({}, function(err, docsCount) {
+          expect(docsCount).to.be.equals(1);
+          expect(twilioClientStub.calls.calledWith('callSid')).to.be.true;
+          expect(callStub.update.args[0][0]).to.deep.equal({
+            url: expectedVoicemailUrl,
+            method: 'POST',
+          });
           done();
         });
       });
