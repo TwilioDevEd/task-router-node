@@ -32,9 +32,7 @@ router.post('/', function (req, res) {
 });
 
 function voicemail (callSid){
-  var accountSid = process.env.TWILIO_ACCOUNT_SID,
-      authToken = process.env.TWILIO_AUTH_TOKEN,
-      client = require('twilio')(accountSid, authToken),
+  var client = buildClient(),
       query = querystring.stringify({
         Message: 'Sorry, All agents are busy. Please leave a message. We\'ll call you as soon as possible',
         Email: process.env.MISSED_CALLS_EMAIL_ADDRESS}),
@@ -47,15 +45,19 @@ function voicemail (callSid){
 }
 
 function notifyOfflineStatus(phone_number) {
-  var accountSid = process.env.TWILIO_ACCOUNT_SID,
-      authToken = process.env.TWILIO_AUTH_TOKEN,
-      client = require('twilio')(accountSid, authToken),
+  var client = buildClient(),
       message = 'Your status has changed to Offline. Reply with "On" to get back Online';
   client.sendMessage({
     to: phone_number,
     from: process.env.TWILIO_NUMBER,
     body: message
   });
+}
+
+function buildClient() {
+  var accountSid = process.env.TWILIO_ACCOUNT_SID,
+      authToken = process.env.TWILIO_AUTH_TOKEN;
+  return require('twilio')(accountSid, authToken);
 }
 
 module.exports = router;
