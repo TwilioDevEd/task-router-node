@@ -98,6 +98,10 @@ workspaceHelper.deleteByName(workspaceJson.name).then(function(){
           configuration: workflowConfiguration
         }).then(function(workflow){
           console.log('Worflow "%s" created.', workflow.friendly_name);
+          console.log('############################################################');
+          console.log("Please export the following variables:");
+          console.log("export WORKFLOW_SID=" + workflow.sid);
+          console.log("export POST_WORK_ACTIVITY_SID=" + idleActivity.sid);
         }).catch(exitErrorHandler);
       }).catch(exitErrorHandler);
     });

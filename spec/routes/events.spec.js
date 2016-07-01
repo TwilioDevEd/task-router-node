@@ -7,6 +7,7 @@ var expect = require('chai').expect,
   sinon = require('sinon'),
   util = require('util'),
   app = require('../../app.js'),
+  querystring = require('querystring'),
   mockery = require('mockery');
 
 
@@ -55,11 +56,15 @@ describe('Record a MissedCall according to event type', function() {
     });
 
     it('will store a missed call and redirect live call into voicemail if no agent available', function(done) {
-      var testApp = supertest(app);
-      var voicemailAddress = 'email@example.com';
-      var quotedMessage = 'Sorry, All agents are busy. Please leave a message. We\'ll call you as soon as possible';
+      var testApp = supertest(app),
+          voicemailAddress = 'email@example.com',
+          query = querystring.stringify({
+            Message: 'Sorry, All agents are busy. Please leave a message. We\'ll call you as soon as possible',
+            Email: voicemailAddress
+          }),
+          expectedVoicemailUrl = util.format("http://twimlets.com/voicemail?%s", query);
       process.env.MISSED_CALLS_EMAIL_ADDRESS = voicemailAddress;
-      var expectedVoicemailUrl = util.format("http://twimlets.com/voicemail?Email=%s&%s", voicemailAddress, quotedMessage);
+
       testApp.post('/events').send({EventType: 'workflow.timeout', TaskAttributes: this.taskAttributes}).end(function () {
         MissedCall.count({}, function(err, docsCount) {
           expect(docsCount).to.be.equals(1);
