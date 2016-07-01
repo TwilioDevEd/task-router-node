@@ -9,6 +9,7 @@ var express = require('express'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   callRouter = require('./routes/call'),
+  smsRouter = require('./routes/sms'),
   eventsRouter = require('./routes/events'),
   MissedCall = require('./models/call'),
   app = express();
@@ -31,6 +32,7 @@ app.get('/', function (req, res) {
   });
 });
 app.use('/call', callRouter);
+app.use('/sms', smsRouter);
 app.use('/events', eventsRouter);
 
 
