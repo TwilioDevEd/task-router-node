@@ -9,9 +9,9 @@ var express = require('express'),
 // POST /events
 router.post('/', function (req, res) {
   var eventType = req.body.EventType;
+  var taskAttributes = (req.body.TaskAttributes)? JSON.parse(req.body.TaskAttributes) : {};
 
   function saveMissedCall(){
-    var taskAttributes = req.body.TaskAttributes;
     return MissedCall.create({
       selectedProduct: taskAttributes.selected_product,
       phoneNumber: taskAttributes.from
@@ -20,7 +20,7 @@ router.post('/', function (req, res) {
 
   var eventHandler = {};
   eventHandler['task.canceled'] = saveMissedCall;
-  eventHandler['workflow.timeout'] = function() { saveMissedCall().then(voicemail('callSid')); };
+  eventHandler['workflow.timeout'] = function() { saveMissedCall().then(voicemail(taskAttributes.call_sid)); };
 
   (eventHandler[eventType] || function(){})();
   res.json({});

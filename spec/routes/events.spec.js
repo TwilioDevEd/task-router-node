@@ -30,7 +30,7 @@ describe('Record a MissedCall according to event type', function() {
   });
 
   beforeEach(function (done) {
-    this.taskAttributes = {from: '+555', selected_product: 'Rockets'};
+    this.taskAttributes = JSON.stringify({from: '+555', selected_product: 'Rockets', call_sid: 'callSid'});
      MissedCall.remove({}, done);
   });
 
