@@ -55,7 +55,7 @@
   ],
   "workflow": {
       "name": "Sales",
-      "callback": "%s/assignment",
+      "callback": "%s/call/assignment",
       "timeout": "15",
       "routingConfiguration": [
         {
