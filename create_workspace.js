@@ -68,6 +68,11 @@ workspaceHelper.deleteByName(workspaceJson.name).then(function(){
           return taskQueue;
         });
       })).then(function(createdQueues){
+        var defaultTarget = new wb.WorkflowRuleTarget({
+          queue: createdQueues.find(byName('Default')).sid,
+          timeout: 30
+        });
+
         var rules = workspaceJson.workflow.routingConfiguration.map(function(configJson){
           var target = new wb.WorkflowRuleTarget({
             queue: createdQueues.find(byName(configJson.targetTaskQueue)).sid,
@@ -75,14 +80,9 @@ workspaceHelper.deleteByName(workspaceJson.name).then(function(){
           });
           return new wb.WorkflowRule({
             expression: configJson.expression,
-            targets: [target],
+            targets: [target, defaultTarget],
             timeout: 30
           });
-        });
-
-        var defaultTarget = new wb.WorkflowRuleTarget({
-          queue: createdQueues.find(byName('Default')).sid,
-          timeout: 30
         });
 
         var taskRouting = new wb.TaskRoutingConfiguration({
