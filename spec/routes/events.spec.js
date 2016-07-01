@@ -15,6 +15,7 @@ describe('Record a MissedCall according to event type', function() {
   var twilioClientStub = sinon.stub();
   var callStub = sinon.stub();
   twilioClientStub.calls = sinon.stub().returns(callStub);
+  twilioClientStub.sendMessage = sinon.stub().returns();
   callStub.update = sinon.stub();
 
   before(function (done) {
@@ -76,6 +77,26 @@ describe('Record a MissedCall according to event type', function() {
           done();
         });
       });
+    });
+
+    it('will send a text to Worker when activity gets set to offline', function(done) {
+
+      var testApp = supertest(app),
+          expectedMessage = 'Your status has changed to Offline. Reply with "On" to get back Online';
+      process.env.TWILIO_NUMBER = '+54321';
+
+      testApp.post('/events').send({
+        EventType: 'worker.activity.update',
+        WorkerActivityName: 'Offline',
+        WorkerAttributes: JSON.stringify({contact_uri: '+1234'})
+      }).expect(function () {
+        expect(twilioClientStub.sendMessage.called).to.be.true;
+        expect(twilioClientStub.sendMessage.args[0][0]).to.deep.equal({
+          to: '+1234',
+          from: process.env.TWILIO_NUMBER,
+          body: expectedMessage
+        });
+      }).expect(200, done);
     });
   });
 });

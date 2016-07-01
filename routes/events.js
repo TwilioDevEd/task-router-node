@@ -20,7 +20,12 @@ router.post('/', function (req, res) {
 
   var eventHandler = {};
   eventHandler['task.canceled'] = saveMissedCall;
-  eventHandler['workflow.timeout'] = function() { saveMissedCall().then(voicemail(taskAttributes.call_sid)); };
+  eventHandler['workflow.timeout'] = function() {
+    saveMissedCall().then(voicemail(taskAttributes.call_sid)); };
+  eventHandler['worker.activity.update'] = function(){
+    var workerAttributes = JSON.parse(req.body.WorkerAttributes);
+    if (req.body.WorkerActivityName === 'Offline') { notifyOfflineStatus(workerAttributes.contact_uri); }
+  };
 
   (eventHandler[eventType] || function(){})();
   res.json({});
@@ -29,15 +34,27 @@ router.post('/', function (req, res) {
 function voicemail (callSid){
   var accountSid = process.env.TWILIO_ACCOUNT_SID,
       authToken = process.env.TWILIO_AUTH_TOKEN,
+      client = require('twilio')(accountSid, authToken),
       query = querystring.stringify({
         Message: 'Sorry, All agents are busy. Please leave a message. We\'ll call you as soon as possible',
         Email: process.env.MISSED_CALLS_EMAIL_ADDRESS}),
-      voicemailUrl = util.format("http://twimlets.com/voicemail?%s", query),
-      client = require('twilio')(accountSid, authToken);
+      voicemailUrl = util.format("http://twimlets.com/voicemail?%s", query);
 
   client.calls(callSid).update({
     method: 'POST',
     url: voicemailUrl
+  });
+}
+
+function notifyOfflineStatus(phone_number) {
+  var accountSid = process.env.TWILIO_ACCOUNT_SID,
+      authToken = process.env.TWILIO_AUTH_TOKEN,
+      client = require('twilio')(accountSid, authToken),
+      message = 'Your status has changed to Offline. Reply with "On" to get back Online';
+  client.sendMessage({
+    to: phone_number,
+    from: process.env.TWILIO_NUMBER,
+    body: message
   });
 }
 
