@@ -20,8 +20,10 @@ describe('Record a MissedCall according to event type', function() {
   callStub.update = sinon.stub();
 
   before(function () {
-    mockery.enable({ useCleanCache: true });
-    mockery.warnOnUnregistered(false);
+    mockery.enable({
+          warnOnReplace: false,
+          warnOnUnregistered: false
+    });
     mockery.registerMock('twilio', sinon.stub().returns(twilioClientStub));
   });
   

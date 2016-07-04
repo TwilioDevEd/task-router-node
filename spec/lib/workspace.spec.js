@@ -15,8 +15,10 @@ describe('workspace', function () {
   };
 
   before(function (done) {
-    mockery.enable({ useCleanCache: true });
-    mockery.warnOnUnregistered(false);
+    mockery.enable({
+          warnOnReplace: false,
+          warnOnUnregistered: false
+    });
     mockery.registerMock('twilio', twilioMock);
     done();
   });
