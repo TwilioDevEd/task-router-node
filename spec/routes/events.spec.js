@@ -12,7 +12,7 @@ var expect = require('chai').expect,
   mockery = require('mockery');
 
 
-describe('Record a MissedCall according to event type', function() {
+describe('TaskRouter processed an event', function() {
   var twilioClientStub = sinon.stub();
   var callStub = sinon.stub();
   twilioClientStub.calls = sinon.stub().returns(callStub);
@@ -36,35 +36,40 @@ describe('Record a MissedCall according to event type', function() {
      MissedCall.remove({}, done);
   });
 
-  describe('TaskRouter event webhook POSTs to /events', function() {
-    it('will ignore unwanted events', function(done) {
-      var testApp = supertest(app);
-      testApp.post('/events').send({EventType: 'unwanted.event', TaskAttributes: this.taskAttributes}).end(function () {
-        MissedCall.count({}, function(err, docsCount) {
-          expect(docsCount).to.be.equals(0);
-          done();
+  describe('events webhook POSTs to /events', function() {
+    context('when the application doesnt care about a type', function () {
+      it('avoid saving it', function(done) {
+        var testApp = supertest(app);
+        testApp.post('/events').send({EventType: 'unwanted.event', TaskAttributes: this.taskAttributes}).end(function () {
+          MissedCall.count({}, function(err, docsCount) {
+            expect(docsCount).to.be.equals(0);
+            done();
+          });
         });
       });
     });
 
-    it('will store a missed call for the case when caller hangs up while waiting', function(done) {
-      var testApp = supertest(app);
-      testApp.post('/events').send({EventType: 'task.canceled', TaskAttributes: this.taskAttributes}).end(function () {
-        MissedCall.count({}, function(err, docsCount) {
-          expect(docsCount).to.be.equals(1);
-          done();
+    context('when a user hangs up while waiting', function () {
+      it('stores a missed call', function(done) {
+        var testApp = supertest(app);
+        testApp.post('/events').send({EventType: 'task.canceled', TaskAttributes: this.taskAttributes}).end(function () {
+          MissedCall.count({}, function(err, docsCount) {
+            expect(docsCount).to.be.equals(1);
+            done();
+          });
         });
       });
     });
 
-    it('will store a missed call and redirect live call into voicemail if no agent available', function(done) {
-      var testApp = supertest(app),
-          voicemailAddress = 'email@example.com',
-          query = querystring.stringify({
-            Message: 'Sorry, All agents are busy. Please leave a message. We\'ll call you as soon as possible',
-            Email: voicemailAddress
-          }),
-          expectedVoicemailUrl = util.format("http://twimlets.com/voicemail?%s", query);
+    context('when no agent is available', function () {
+      it('stores missed call and puts call into voicemail', function(done) {
+        var testApp = supertest(app),
+        voicemailAddress = 'email@example.com',
+        query = querystring.stringify({
+          Message: 'Sorry, All agents are busy. Please leave a message. We\'ll call you as soon as possible',
+        Email: voicemailAddress
+        }),
+        expectedVoicemailUrl = util.format("http://twimlets.com/voicemail?%s", query);
       process.env.MISSED_CALLS_EMAIL_ADDRESS = voicemailAddress;
 
       testApp.post('/events').send({EventType: 'workflow.timeout', TaskAttributes: this.taskAttributes}).end(function () {
@@ -78,12 +83,14 @@ describe('Record a MissedCall according to event type', function() {
           done();
         });
       });
+      });
     });
 
-    it('will send a text to Worker when activity gets set to offline', function(done) {
+    context('when a Worker goes offline', function () {
+      it('sends a text to Worker', function(done) {
 
-      var testApp = supertest(app),
-          expectedMessage = 'Your status has changed to Offline. Reply with "On" to get back Online';
+        var testApp = supertest(app),
+        expectedMessage = 'Your status has changed to Offline. Reply with "On" to get back Online';
       process.env.TWILIO_NUMBER = '+54321';
 
       testApp.post('/events').send({
@@ -98,6 +105,7 @@ describe('Record a MissedCall according to event type', function() {
           body: expectedMessage
         });
       }).expect(200, done);
+      });
     });
   });
 });
