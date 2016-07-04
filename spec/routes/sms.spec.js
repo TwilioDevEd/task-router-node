@@ -8,7 +8,7 @@ var expect = require('chai').expect,
   Q = require('q'),
   app = require('../../app.js');
 
-describe('Worker replies "on" or "off" over SMS and Twilio webhook POSTs to /sms/incoming', function() {
+describe('Twilio SMS webhooks', function() {
   var workspaceHelperStub = sinon.stub();
   workspaceHelperStub.findByName = sinon.stub().returns(Q.resolve(sinon.stub()));
 
@@ -23,12 +23,16 @@ describe('Worker replies "on" or "off" over SMS and Twilio webhook POSTs to /sms
     mockery.disable();
   });
 
-  it('will change worker status to Idle when text body is "on"', function(done) {
-    var testApp = supertest(app);
-    testApp.post('/sms/incoming', {Body: "on", From: "+1337"}).expect(function (response) {
-      var $ = cheerio.load(response.text);
-      expect($('say').text()).to.equal('Your status has changed to Idle');
-    }).expect(200, done);
+  describe('POSTs to /sms/incoming', function () {
+    context('when text body is "on"', function () {
+      it('replies a change confirmation to Idle', function(done) {
+        var testApp = supertest(app);
+        testApp.post('/sms/incoming', {Body: "on", From: "+1337"}).expect(function (response) {
+          var $ = cheerio.load(response.text);
+          expect($('say').text()).to.equal('Your status has changed to Idle');
+        }).expect(200, done);
+      });
+    });
   });
 });
 
