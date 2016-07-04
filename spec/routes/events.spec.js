@@ -1,8 +1,9 @@
 'use strict';
 
+require('../spec-helper');
+
 var expect = require('chai').expect,
   supertest = require('supertest'),
-  mongoose = require('mongoose'),
   MissedCall = require('../../models/missed-call'),
   sinon = require('sinon'),
   util = require('util'),
@@ -18,16 +19,14 @@ describe('Record a MissedCall according to event type', function() {
   twilioClientStub.sendMessage = sinon.stub().returns();
   callStub.update = sinon.stub();
 
-  before(function (done) {
+  before(function () {
     mockery.enable({ useCleanCache: true });
     mockery.warnOnUnregistered(false);
     mockery.registerMock('twilio', sinon.stub().returns(twilioClientStub));
-    mongoose.connect(require('../../lib/db-connection')(), done);
   });
   
-  after(function (done) {
+  after(function () {
     mockery.disable();
-    mongoose.disconnect(done);
   });
 
   beforeEach(function (done) {

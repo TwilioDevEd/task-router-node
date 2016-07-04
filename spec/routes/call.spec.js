@@ -1,11 +1,12 @@
 'use strict';
 
+require('../spec-helper');
+
 var expect = require('chai').expect,
   supertest = require('supertest'),
   cheerio = require('cheerio'),
-  app = require('../../app.js'),
   MissedCall = require('../../models/missed-call'),
-  mongoose = require('mongoose');
+  app = require('../../app.js');
 
 describe('user calls and Twilio voice webhook POSTs to /call/incoming', function() {
   it('will gather a digit', function(done) {
@@ -79,14 +80,6 @@ describe('TaskRouter matched a Task to a Worker and POSTs to /call/assignment', 
 });
 
 describe('missed calls', function () {
-
-  before(function (done) {
-    mongoose.connect(require('../../lib/db-connection')(), done);
-  });
-  
-  after(function (done) {
-    mongoose.disconnect(done);
-  });
 
   beforeEach(function (done) {
      MissedCall.remove({}, done);
