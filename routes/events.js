@@ -18,16 +18,19 @@ router.post('/', function (req, res) {
     });
   }
 
-  var eventHandler = {};
-  eventHandler['task.canceled'] = saveMissedCall;
-  eventHandler['workflow.timeout'] = function() {
-    saveMissedCall().then(voicemail(taskAttributes.call_sid)); };
-  eventHandler['worker.activity.update'] = function(){
-    var workerAttributes = JSON.parse(req.body.WorkerAttributes);
-    if (req.body.WorkerActivityName === 'Offline') { notifyOfflineStatus(workerAttributes.contact_uri); }
+  var eventHandler = {
+    'task.canceled': saveMissedCall,
+    'workflow.timeout': function() {
+      saveMissedCall().then(voicemail(taskAttributes.call_sid));
+    },
+    'worker.activity.update': function(){
+      var workerAttributes = JSON.parse(req.body.WorkerAttributes);
+      if (req.body.WorkerActivityName === 'Offline') { notifyOfflineStatus(workerAttributes.contact_uri); }
+    },
+    'default': function() {}
   };
 
-  (eventHandler[eventType] || function(){})();
+  (eventHandler[eventType] || eventHandler['default'])();
   res.json({});
 });
 
