@@ -1,7 +1,7 @@
 'use strict';
 
 var express = require('express'),
-  MissedCall = require('../models/call'),
+  MissedCall = require('../models/missed-call'),
   util = require('util'),
   querystring = require('querystring'),
   router = express.Router();

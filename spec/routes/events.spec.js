@@ -3,7 +3,7 @@
 var expect = require('chai').expect,
   supertest = require('supertest'),
   mongoose = require('mongoose'),
-  MissedCall = require('../../models/call'),
+  MissedCall = require('../../models/missed-call'),
   sinon = require('sinon'),
   util = require('util'),
   app = require('../../app.js'),

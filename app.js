@@ -11,7 +11,7 @@ var express = require('express'),
   callRouter = require('./routes/call'),
   smsRouter = require('./routes/sms'),
   eventsRouter = require('./routes/events'),
-  MissedCall = require('./models/call'),
+  MissedCall = require('./models/missed-call'),
   app = express();
 
 // view engine setup

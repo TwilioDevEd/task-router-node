@@ -4,7 +4,7 @@ var expect = require('chai').expect,
   supertest = require('supertest'),
   cheerio = require('cheerio'),
   app = require('../../app.js'),
-  MissedCall = require('../../models/call'),
+  MissedCall = require('../../models/missed-call'),
   mongoose = require('mongoose');
 
 describe('user calls and Twilio voice webhook POSTs to /call/incoming', function() {
