@@ -54,6 +54,7 @@
     "cheerio": "^0.19.0",
     "mocha": "^2.3.4",
     "mockery": "^1.6.2",
+    "nock-vcr": "0.0.0",
     "sinon": "^1.17.4",
     "supertest": "^1.1.0"
   }

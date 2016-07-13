@@ -28,6 +28,7 @@ describe('TaskRouter processed an event', function() {
   });
   
   after(function () {
+    mockery.deregisterAll();
     mockery.disable();
   });
 

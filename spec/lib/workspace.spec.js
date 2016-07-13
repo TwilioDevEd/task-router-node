@@ -1,78 +1,29 @@
 'use strict';
 
 var expect = require('chai').expect,
-  sinon = require('sinon'),
-  Q = require('q'),
-  mockery = require('mockery');
+  workspace = require('../../lib/workspace'),
+  nvcr = require('nock-vcr');
 
-describe('workspace', function () {
 
-  var workspacesStub = sinon.stub();
-  var twilioMock = {
-    'TaskRouterClient': function () {
-      return { workspaces: workspacesStub, workspace: workspacesStub };
-    }
-  };
 
-  before(function (done) {
-    mockery.enable({
-          warnOnReplace: false,
-          warnOnUnregistered: false
-    });
-    mockery.registerMock('twilio', twilioMock);
-    done();
-  });
-
-  describe('#create', function () {
-    it('should create a workspace', function () {
-      var createWorkspaceStub = sinon.stub().returns(Q.resolve({}));
-      workspacesStub.create = createWorkspaceStub;
-
-      var workspace = require('../../lib/workspace');
-      workspace.create('My Workspace', 'event-callback-url');
-
-      expect(createWorkspaceStub.calledWith({
-        friendlyName: 'My Workspace',
-        eventCallbackUrl: 'event-callback-url'
-      })).to.be.equal(true);
-    });
-  });
-
-  describe('#findByName', function () {
-    it('should find a workspace by name', function (done) {
-      var listWorkspaceStub = sinon.stub().returns(Q.resolve({
-        workspaces: [{friendly_name: 'My Workspace'}, {friendly_name: 'Other Workspace'}]
-      }));
-      workspacesStub.list = listWorkspaceStub;
-
-      var workspace = require('../../lib/workspace');
-      workspace.findByName('My Workspace').then(function(found){
-        expect(listWorkspaceStub.called).to.be.equal(true);
-        expect(found.friendly_name).to.be.equal('My Workspace');
+context('without any mock, using nock-vcr', function () {
+  describe('#setup', function () {
+    it('should return workspace information', function (done) {
+      nvcr.insertCassette('setup');
+      process.env.ALICE_NUMBER = '+551111111111';
+      process.env.BOB_NUMBER = '+201111111111';
+      process.env.HOST = 'https://ngrok.io';
+      workspace.setup(function (err){done(err);}).then(function (data) {
+        var workerInfo = data[0],
+            workspaceInfo = data[1];
+        expect(workspaceInfo.workspaceSid).to.be.equals('WS11566a021558d3ed28b54af8c4c7b857');
+        expect(workspaceInfo.workflowSid).to.be.equals('WW98cc22847320360660d1de05dbe72c42');
+        expect(workspaceInfo.activities.idle).to.be.equals('WAce62b8a472c363a49bd604f0d226cd8d');
+        expect(workspaceInfo.activities.offline).to.be.equals('WAc30aec85a6ffe44693da7a0f84be5846');
+        expect(workerInfo[process.env.ALICE_NUMBER]).to.be.equals('WKfd6a35e83f81e77d723894ce01c89091');
+        expect(workerInfo[process.env.BOB_NUMBER]).to.be.equals('WK9d3cc6f1b18a93496b1d9768b25ba5e3');
         done();
-      }, function(err) { done(err); }).done();
+      }).done();
     });
-  });
-
-  describe('#deleteByName', function () {
-    it('should delete a workspace by name', function (done) {
-      var listWorkspaceStub = sinon.stub().returns(Q.resolve({
-        workspaces: [{friendly_name: 'My Workspace'}, {friendly_name: 'Other Workspace'}]
-      }));
-      var deleteWorkspaceStub = sinon.stub();
-      workspacesStub.list = listWorkspaceStub;
-      workspacesStub.delete = deleteWorkspaceStub;
-
-      var workspace = require('../../lib/workspace');
-      workspace.deleteByName('My Workspace').then(function(){
-        expect(deleteWorkspaceStub.called).to.be.equal(true);
-        done();
-      }, function(err) { done(err); }).done();
-    });
-  });
-
-  after(function (done) {
-    mockery.disable();
-    done();
   });
 });
