@@ -10,7 +10,7 @@ var express = require('express'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
   callRouter = require('./routes/call')(app),
-  smsRouter = require('./routes/sms'),
+  smsRouter = require('./routes/sms')(app),
   eventsRouter = require('./routes/events'),
   MissedCall = require('./models/missed-call');
 

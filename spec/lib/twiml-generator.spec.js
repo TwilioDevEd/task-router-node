@@ -8,7 +8,7 @@ describe('twiml-generator', function() {
   it('#generateConfirmMessage', function() {
     var response = twimlGenerator.generateConfirmMessage('New Status'),
         $ = cheerio.load(response);
-    expect($('say').text()).to.equal('Your status has changed to New Status');
+    expect($('message').text()).to.equal('Your status has changed to New Status');
   });
 });
 
