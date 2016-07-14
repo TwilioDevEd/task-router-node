@@ -76,7 +76,7 @@ describe('TaskRouter processed an event', function() {
       testApp.post('/events').send({EventType: 'workflow.timeout', TaskAttributes: this.taskAttributes}).end(function () {
         MissedCall.count({}, function(err, docsCount) {
           expect(docsCount).to.be.equals(1);
-          expect(twilioClientStub.calls.calledWith('callSid')).to.be.true;
+          expect(twilioClientStub.calls.calledWith('callSid')).to.be.equal(true);
           expect(callStub.update.args[0][0]).to.deep.equal({
             url: expectedVoicemailUrl,
             method: 'POST',
@@ -99,7 +99,7 @@ describe('TaskRouter processed an event', function() {
         WorkerActivityName: 'Offline',
         WorkerAttributes: JSON.stringify({contact_uri: '+1234'})
       }).expect(function () {
-        expect(twilioClientStub.sendMessage.called).to.be.true;
+        expect(twilioClientStub.sendMessage.called).to.be.equal(true);
         expect(twilioClientStub.sendMessage.args[0][0]).to.deep.equal({
           to: '+1234',
           from: process.env.TWILIO_NUMBER,
