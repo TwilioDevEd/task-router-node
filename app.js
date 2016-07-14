@@ -3,16 +3,16 @@
 require('dotenv').config({silent: true});
 
 var express = require('express'),
+  app = express(),
   path = require('path'),
   favicon = require('serve-favicon'),
   logger = require('morgan'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
-  callRouter = require('./routes/call'),
+  callRouter = require('./routes/call')(app),
   smsRouter = require('./routes/sms'),
   eventsRouter = require('./routes/events'),
-  MissedCall = require('./models/missed-call'),
-  app = express();
+  MissedCall = require('./models/missed-call');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -48,7 +48,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function(err, req, res) {
     console.trace(err);
     res.status(err.status || 500);
     res.render('error', {
@@ -60,7 +60,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

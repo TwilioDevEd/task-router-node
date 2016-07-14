@@ -11,9 +11,6 @@
     "name": "Victor Shyba",
     "email": "victor.shyba@gmail.com"
   },
-  "bin": {
-    "create_workspace": "create_workspace.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/TwilioDevEd/task-router-node"

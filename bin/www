@@ -9,6 +9,7 @@ var debug = require('debug')('task-router-node:server');
 var http = require('http');
 var mongoose = require('mongoose');
 var dbConnection = require('../lib/db-connection');
+var workspace = require('../lib/workspace');
 
 /**
  * Get port from environment and store in Express.
@@ -90,6 +91,19 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  console.log("Configuring a Twilio's TaskRouter Workspace");
+  workspace.setup(exitErrorHandler).then(function (data) {
+    app.set('workerInfo', data[0]);
+    app.set('workspaceInfo', data[1]);
+    console.log('Application configured!');
+    console.log('Call your Twilio number at: ' + process.env.TWILIO_NUMBER);
+  });
+}
+
+function exitErrorHandler(error) {
+  console.error('An error occurred:');
+  console.error(error);
+  process.exit(1);
 }
 
 mongoose.connect(dbConnection());
