@@ -8,7 +8,7 @@ var expect = require('chai').expect,
 
 context('without any mock, using nock-vcr', function () {
   describe('#setup', function () {
-    it('should return workspace information', function (done) {
+    it('returns workspace information', function (done) {
       nvcr.insertCassette('setup');
       process.env.ALICE_NUMBER = '+551111111111';
       process.env.BOB_NUMBER = '+201111111111';
