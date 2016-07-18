@@ -4,7 +4,8 @@ var express = require('express'),
   MissedCall = require('../models/missed-call'),
   util = require('util'),
   querystring = require('querystring'),
-  router = express.Router();
+  router = express.Router(),
+  Q = require('q');
 
 // POST /events
 router.post('/', function (req, res) {
@@ -21,17 +22,21 @@ router.post('/', function (req, res) {
   var eventHandler = {
     'task.canceled': saveMissedCall,
     'workflow.timeout': function() {
-      saveMissedCall().then(voicemail(taskAttributes.call_sid));
+      return saveMissedCall().then(voicemail(taskAttributes.call_sid));
     },
     'worker.activity.update': function(){
       var workerAttributes = JSON.parse(req.body.WorkerAttributes);
-      if (req.body.WorkerActivityName === 'Offline') { notifyOfflineStatus(workerAttributes.contact_uri); }
+      if (req.body.WorkerActivityName === 'Offline') {
+        notifyOfflineStatus(workerAttributes.contact_uri);
+      }
+      return Q.resolve({});
     },
-    'default': function() {}
+    'default': function() { return Q.resolve({}); }
   };
 
-  (eventHandler[eventType] || eventHandler['default'])();
-  res.json({});
+  (eventHandler[eventType] || eventHandler['default'])().then(function () {
+    res.json({});
+  });
 });
 
 function voicemail (callSid){
