@@ -1,0 +1,321 @@
+.chapter(data-title='TaskRouter Node.js')
+  .step(data-title='Application Overview', data-file='app.js')
+    :markdown
+      ## Application Overview
+
+      In this tutorial we will show how to automate the routing of calls from
+      customers to your support agents. In this example customers would select
+      a product, then be connected to a specialist for that product. If no one
+      is available our customer's number will be saved so that our agent can
+      call them back.
+    
+      ### This is what the application does at a high level:
+
+      * Configure a workspace using the Twilio [TaskRouter REST API][api-main].  
+      * Listen for incoming calls and let the user select a product
+      with the dial pad.  
+      * Create a Task with the selected product and let
+      TaskRouter handle it.  
+      * Store missed calls so agents can return the
+      call to customers.  
+      * Redirect users to a voice mail when no one
+      answers the call.  
+      * Allow agents to change their status
+      (Available/Offline) via SMS.
+
+      ---
+      **See Also:**
+      * [Installing Express](//expressjs.com/en/starter/installing.html)
+      * [The Twilio Node Helper Library](//www.twilio.com/docs/libraries/node)
+
+      [api-main]: //www.twilio.com/docs/api/taskrouter/rest-api
+
+  .step(data-title='Configuring the Workspace', data-file='lib/workspace.js',
+    data-highlight='6-11, 14-125')
+    :markdown
+      ## Configuring the Workspace
+
+      In order to instruct TaskRouter to handle the Tasks, we need to
+      configure a Workspace. We can do this in the [TaskRouter
+      Console](//www.twilio.com/console/taskrouter/workspaces) or
+      programmatically using the [TaskRouter REST API][api-main].
+
+      In this Node.js application we'll do this setup when we start up the app.
+
+      A [Workspace][workspaces-doc] is the container element for any TaskRouter
+      application. The elements are:
+
+      * [Tasks][tasks-doc] - Represents a customer trying to contact an agent
+      * [Workers][workers-doc] - The agents responsible for handling Tasks
+      * [Task Queues][queues-doc] - Holds Tasks to be consumed by a set of Workers
+      * [Workflows][workflows-doc] - Responsible for placing Tasks into Task Queues
+      * [Activities][activities-doc] - Possible states of a Worker. Eg: idle, offline, busy
+      
+      In order to build a client for this API, we need a `TWILIO_ACCOUNT_SID`
+      and `TWILIO_AUTH_TOKEN` which you can find on [Twilio
+      Console](//www.twilio.com/console). The function `buildClient`
+      configures and returns a TaskRouterClient, which is provided by the
+      [Twilio Node.js library][node-api-doc].
+
+      ---
+      **See Also:**
+      * [TaskRouter: REST API Reference][api-main]
+      * [Twilio Node.js API Documentation][node-api-doc]
+
+      [node-api-doc]: //twilio.github.io/twilio-node/
+      [api-main]: //www.twilio.com/docs/api/taskrouter/rest-api
+      [workspaces-doc]: //www.twilio.com/docs/api/taskrouter/workspaces
+      [workflows-doc]: //www.twilio.com/docs/api/taskrouter/workflows
+      [queues-doc]: //www.twilio.com/docs/api/taskrouter/taskqueues
+      [tasks-doc]: //www.twilio.com/docs/api/taskrouter/tasks
+      [workers-doc]: //www.twilio.com/docs/api/taskrouter/workers
+      [activities-doc]: //www.twilio.com/docs/api/taskrouter/activities
+
+  .step(data-title='Creating a Workspace', data-file='lib/workspace.js',
+    data-highlight='143-160')
+    :markdown
+      ## Creating a Workspace
+
+      Before creating a workspace, we need to delete any others with the same
+      `friendlyName` as the one we are trying to create. In order to create a
+      workspace we need to provide a `friendlyName` and a `eventCallbackUrl`
+      where a requests will be made every time an event is triggered in our workspace.
+
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Workspace](//www.twilio.com/docs/api/taskrouter/workspaces)
+      * [Creating a Workspace](//www.twilio.com/docs/api/taskrouter/workspaces#action-create)
+
+  .step(data-title='Creating the Workers', data-file='lib/workspace.js',
+    data-highlight='30-55')
+    :markdown
+      ## Creating the Workers
+
+      We'll create two workers, Bob and Alice. They each have two attributes:
+      `contact_uri` a phone number and `products`, a list of products
+      each worker is specialized in. We also need to specify an `activitySid`
+      and a name for each worker. The selected activity will define the status of
+      the worker.
+
+      A set of [default activities](//www.twilio.com/docs/api/taskrouter/activities#default-activities)
+      is created with your workspace. We use the `Idle` activity to make a worker
+      available for incoming calls.
+
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Workers](//www.twilio.com/docs/api/taskrouter/workers)
+
+  .step(data-title='Creating the Task Queues', data-file='lib/workspace.js',
+    data-highlight='57-72')
+    :markdown
+      ## Creating the Task Queues
+
+      Next, we set up the Task Queues. Each with a
+      `friendlyName` and a `targetWorkers`, which is an expression to match Workers.
+      Our Task Queues are:
+
+      1. `SMS` - Will target Workers specialized in Programmable SMS, such
+         as Bob, using the expression `'"ProgrammableSMS" in products'`.
+      1. `Voice` - Will do the same for Programmable Voice Workers, such
+         as Alice, using the expression `'"ProgrammableVoice" in products'`.
+      1. `Default` - This queue targets all users and can be used when there are
+         no specialist around for the chosen product. We can use the `"1==1"`
+         expression here.
+
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Task Queues](//www.twilio.com/docs/api/taskrouter/taskqueues)
+      * [TargetWorkers's Expressions](//www.twilio.com/docs/api/taskrouter/taskqueues#target-workers)
+
+  .step(data-title='Creating a Workflow', data-file='lib/workspace.js',
+    data-highlight='72-117')
+    :markdown
+      ## Creating a Workflow
+
+      Finally, we create the Workflow using the following parameters:
+
+      1. `friendlyName` as the name of a Workflow.
+      1. `assignmentCallbackUrl` and `fallbackAssignmentCallbackUrl`
+         as the public URL where a request will be made when this Workflow
+         assigns a Task to a Worker. We will learn how to implement it on the next steps.
+      1. `taskReservationTimeout` as the maximum time we want to wait until a Worker is available for handling a Task.
+      1. `configuration` which is a set of rules for placing Tasks into Task Queues.
+         The routing configuration will take a Task's attribute and match this with Task
+         Queues. This application's Workflow rules are defined as:
+         1. `"selected_product==\
+         "ProgrammableSMS\""` expression for `SMS` Task
+            Queue. This expression will match any Task with `ProgrammableSMS` as
+            the `selected_product` attribute.
+         1. `"selected_product==\
+         "ProgrammableVoice\""` expression for `Voice`
+            Task Queue.
+
+      ---
+      **See Also:**
+      * [TaskRouter REST API: Workflows](//www.twilio.com/docs/api/taskrouter/workflows)
+
+  .step(data-title="Handling Twilio's Request", data-file='routes/call.js',
+    data-highlight='8-20')
+    :markdown
+      ## Handling Twilio's Request
+
+      Right after receiving a call, Twilio will send a request to the
+      URL specified on the [number's configuration](//www.twilio.com/console/phone-numbers/incoming).
+
+      The endpoint will then process the request and generate a TwiML response.
+      We'll use the [Say](//www.twilio.com/docs/api/twiml/say) verb to give the
+      user product alternatives, and a key they can press in order to select
+      one. The [Gather](//www.twilio.com/docs/api/twiml/gather) verb allows us
+      to capture the user's key press.
+
+      ---
+      **See Also:**
+      * [Twilio webhooks](//www.twilio.com/platform/webhooks)
+      * [TwiML Voice: Your Response](//www.twilio.com/docs/api/twiml/your_response)
+      * [TwiML Voice: <Say> verb](//www.twilio.com/docs/api/twiml/say)
+      * [TwiML Voice: <Gather> verb](//www.twilio.com/docs/api/twiml/gather)
+
+  .step(data-title='Creating a Task', data-file='routes/call.js',
+    data-highlight='22-32')
+    :markdown
+      ## Creating a Task
+
+      This is the endpoint set as the `action` URL on the `Gather` verb on the
+      previous step. A request is made to this endpoint when the user presses
+      a key during the call.
+      This request has a `Digits` parameter that holds the pressed keys.
+      A `Task` will be created based on the pressed digit with the
+      `selected_product` as an attribute. The Workflow will take this Task's
+      attributes and match with the [configured
+      expressions](//www.twilio.com/docs/api/taskrouter/expression-syntax)
+      in order to find a Task Queue for this Task, so an appropriate available
+      Worker can be assigned to handle it.
+
+      We use the [`Enqueue` verb][enqueue-verb] with a `WorkflowSid` attribute
+      to [integrate with TaskRouter][integration-doc]. Then the voice call will
+      be put on hold while TaskRouter tries to find an available Worker to
+      handle this Task.
+
+      ---
+      **See Also:**
+      * [TwiML Voice: Twilio's Request](//www.twilio.com/docs/api/twiml/twilio_request)
+      * [TwiML Voice: <Gather> callback attributes](//www.twilio.com/docs/api/twiml/gather#attributes-action-parameters)
+      * [TwiML Voice: <Enqueue> verb][enqueue-verb]
+      * [TaskRouter: Using <Enqueue> to route calls with TaskRouter](//www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter)
+      [integration-doc]: //www.twilio.com/docs/api/taskrouter/twiml-integration#using-enqueue-to-route-calls-with-taskrouter
+      [enqueue-verb]: //www.twilio.com/docs/api/twiml/enqueue
+
+  .step(data-title='Assigning a Worker', data-file='routes/call.js',
+    data-highlight='34-41')
+    :markdown
+      ## Assigning a Worker
+
+      When TaskRouter selects a Worker, it does the following:
+
+      1. The Task's Assignment Status is set to 'reserved'.
+      1. A [Reservation instance][reservation-instance-doc] is generated,
+         linking the Task to the selected Worker.
+      1. At the same time the Reservation is created, a POST request is made to
+      the Workflow's AssignmentCallbackURL, which was configured while creating the
+      Workflow.
+      This request includes the full details of the Task, the selected Worker,
+      and the Reservation.
+
+      Handling this [Assignment Callback][assignment-callback] is a key
+      component of building a TaskRouter application as we can instruct how the
+      Worker will handle a Task. We could send a text, e-mail, push
+      notifications or make a call.
+
+      Since we created this Task during a voice call with an `Enqueue` verb,
+      let's [instruct TaskRouter to dequeue][dequeue-section] the call and dial
+      a Worker. If we do not specify a `to` parameter with a
+      phone number, TaskRouter will pick the Worker's `contact_uri` attribute.
+
+      We also send a `post_work_activity_sid` which will tell TaskRouter which
+      Activity to assign this worker after the call ends.
+
+      ---
+      **See Also:**
+      * [Assigning Tasks to Workers: Handling Assignment Callbacks][assignment-callback]
+      * [Assigning Tasks to Workers: Dequeue a call from a TwiML queue][dequeue-section]
+
+      [reservation-instance-doc]: //www.twilio.com/docs/api/taskrouter/reservations
+      [assignment-callback]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks
+      [dequeue-section]: //www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call
+
+  .step(data-title='Collecting Missed Calls', data-file='routes/events.js',
+    data-highlight='9-64')
+    :markdown
+      ## Collecting Missed Calls
+
+      This endpoint will be called after each [TaskRouter Event][event-types]
+      is triggered. In our application, we are trying to collect missed calls,
+      so we would like to handle the `workflow.timeout` event. This event is
+      triggered when the Task waits more than the limit set on Workflow
+      Configuration-- or rather when no worker is available.
+
+      Here we use TwilioRestClient to route this call to a [Voicemail
+      Twimlet][voicemail-twimlet]. Twimlets are tiny web applications for
+      voice.  This one will generate a `TwiML` response using `Say` verb and
+      record a message using `Record` verb. The recorded message will then be
+      transcribed and sent to the email address configured.
+
+      Note that we are also listening for `task.canceled`. This is triggered
+      when the customer hangs up before being assigned to an agent, therefore
+      canceling the task. Capturing this event allows us to collect the
+      information from the customers that hang up before the Workflow times out.
+
+      ---
+      **See Also:**
+      * [TaskRouter: Events](//www.twilio.com/docs/api/taskrouter/events)
+      * [TaskRouter: Event types][event-types]
+      * [Twilio Twimlets][twimlets]
+
+      [event-types]: //www.twilio.com/docs/api/taskrouter/events#event-types
+      [twimlets]: //www.twilio.com/labs/twimlets
+      [voicemail-twimlet]: //www.twilio.com/labs/twimlets/voicemail
+
+  .step(data-title="Changing a Worker's Activity", data-file='routes/sms.js',
+        data-highlight='8-25')
+    :markdown
+      ## Changing a Worker's Activity
+
+      We have created this endpoint, so a worker can send an SMS message to the support
+      line with the command "On" or "Off" to change their availability status.
+
+      This is important as a worker's activity will change to `Offline` when they miss
+      a call. When this happens, they receive an SMS letting them know that their activity
+      has changed, and that they can reply with the `On` command to make themselves
+      available for incoming calls again.
+
+      ---
+      **See Also:**
+      * [TaskRouter: Events](//www.twilio.com/docs/api/taskrouter/events)
+      * [TaskRouter: Event types][event-types]
+
+      [event-types]: //www.twilio.com/docs/api/taskrouter/events#event-types
+      [voicemail-twimlet]: //www.twilio.com/labs/twimlets/voicemail
+
+  .step
+    :markdown
+      ## Where to Next?
+
+      That's it!
+
+      If you're a Node.js/Express developer working with
+      Twilio, you might enjoy these other tutorials:
+
+      [**Warm-Transfer**](//www.twilio.com/docs/tutorials/walkthrough/warm-transfer/node/express)
+
+      Have you ever been disconnected from a support call while being
+      transferred to another support agent? Warm transfer eliminates this
+      problem. Using Twilio powered warm transfers your agents will have the
+      ability to conference in another agent in realtime.
+
+      [**Automated-Survey-NodeJS**](//www.twilio.com/docs/tutorials/walkthrough/automated-survey/node/express)
+
+      Instantly collect structured data from your users with a survey conducted over a call or SMS text messages.
+
+      Thanks for checking this tutorial out! If you have any feedback
+      to share with us, we'd love to hear it.
+      [Contact the Twilio Developer Education Team](mailto:deved-oss@twilio.com) to let us know what you think.
