@@ -23,10 +23,13 @@ module.exports = function (app) {
   router.post('/enqueue/', function (req, res) {
     var pressedKey = req.body.Digits;
     var twimlResponse = new twilio.TwimlResponse();
-    var selectedProduct = (pressedKey === '1')? 'ProgrammableSMS':'ProgrammableVoice';
-    twimlResponse.enqueue({workflowSid: app.get('workspaceInfo').workflowSid}, function(enqueueNode) {
+    var selectedProduct = (pressedKey === '1') ? 'ProgrammableSMS' : 'ProgrammableVoice';
+    twimlResponse.enqueue({
+      workflowSid: app.get('workspaceInfo').workflowSid
+    }, function(enqueueNode) {
       enqueueNode.task('{"selected_product": "' + selectedProduct + '"}');
     });
+
     res.type('text/xml');
     res.send(twimlResponse.toString());
   });
