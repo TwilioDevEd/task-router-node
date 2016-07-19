@@ -41,8 +41,8 @@ describe('user pressed a key', function () {
   describe('Twilio POSTs digit to /call/enqueue', function() {
     it('chooses ProgrammableSMS as Task attribute if pressed key is 1', function(done) {
       var testApp = supertest(app);
-      app.set('workspaceInfo', {workflowSid: 'SID123', activities: {idle: 'SID123'}});
-      testApp.post('/call/enqueue').send({Digits: '1'}).expect(function (response) {
+      app.set('workspaceInfo', { workflowSid: 'SID123', activities: { idle: 'SID123' } });
+      testApp.post('/call/enqueue').send({ Digits: '1' }).expect(function (response) {
         var $ = cheerio.load(response.text);
         expect($('enqueue task').text()).to.equal('{"selected_product": "ProgrammableSMS"}');
       }).expect(200, done);
@@ -50,8 +50,8 @@ describe('user pressed a key', function () {
 
     it('chooses ProgrammableVoice as Task attribute if pressed key is not 1', function(done) {
       var testApp = supertest(app);
-      app.set('workspaceInfo', {workflowSid: 'SID123', activities: {idle: 'SID123'}});
-      testApp.post('/call/enqueue').send({'Digits': '#'}).expect(function (response) {
+      app.set('workspaceInfo', { workflowSid: 'SID123', activities: { idle: 'SID123' } });
+      testApp.post('/call/enqueue').send({ 'Digits': '#' }).expect(function (response) {
         var $ = cheerio.load(response.text);
         expect($('enqueue task').text()).to.equal('{"selected_product": "ProgrammableVoice"}');
       }).expect(200, done);
@@ -59,8 +59,8 @@ describe('user pressed a key', function () {
 
     it('uses workflowSid as Enqueue verb attribute for TaskRouter integration', function (done) {
       var testApp = supertest(app);
-      app.set('workspaceInfo', {workflowSid: 'SID123'});
-      testApp.post('/call/enqueue').send({'Digits': '#'}).expect(function (response) {
+      app.set('workspaceInfo', { workflowSid: 'SID123' });
+      testApp.post('/call/enqueue').send({ 'Digits': '#' }).expect(function (response) {
         var $ = cheerio.load(response.text);
         expect($('enqueue').attr('workflowsid')).to.equal('SID123');
       }).expect(200, done);
@@ -72,7 +72,7 @@ describe('TaskRouter matched a Task to a Worker', function () {
   describe('webhook POSTs to /call/assignment', function () {
     it('instructs to dequeue this call', function(done) {
       var testApp = supertest(app);
-      app.set('workspaceInfo', {workflowSid: 'SID123', activities: {idle: 'SID123'}});
+      app.set('workspaceInfo', { workflowSid: 'SID123', activities: { idle: 'SID123' } });
       testApp.post('/call/assignment').expect(function (response) {
         expect(response.body.instruction).to.equal("dequeue");
       }).expect(200, done);
@@ -80,7 +80,7 @@ describe('TaskRouter matched a Task to a Worker', function () {
 
     it('specifies an Activity SID to be set later', function(done) {
       var testApp = supertest(app);
-      app.set('workspaceInfo', {workflowSid: 'SID123', activities: {idle: 'SID123'}});
+      app.set('workspaceInfo', { workflowSid: 'SID123', activities: { idle: 'SID123' } });
       testApp.post('/call/assignment').expect(function (response) {
         expect(response.body.post_work_activity_sid).to.equal("SID123");
       }).expect(200, done);
