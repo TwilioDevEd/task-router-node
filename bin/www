@@ -102,10 +102,10 @@ function exitErrorHandler(error) {
   process.exit(1);
 }
 
-var checkedEnvVariables = ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN',
+var envVariables = ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN',
   'TWILIO_NUMBER', 'MISSED_CALLS_EMAIL_ADDRESS', 'HOST', 'ALICE_NUMBER',
   'BOB_NUMBER'];
-checkedEnvVariables.forEach(function (variableName) {
+envVariables.forEach(function (variableName) {
   if (!process.env[variableName]) {
     exitErrorHandler(variableName + ' variable is not set on your environment. Please check your environment variables or your .env file from .env.example');
   }
