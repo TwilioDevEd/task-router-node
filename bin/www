@@ -62,9 +62,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -87,9 +85,7 @@ function onError(error) {
 
 function onListening() {
   var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
   console.log("Configuring a Twilio's TaskRouter Workspace");
   workspace.setup(exitErrorHandler).then(function (data) {
@@ -105,6 +101,15 @@ function exitErrorHandler(error) {
   console.error(error);
   process.exit(1);
 }
+
+var envVariables = ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN',
+  'TWILIO_NUMBER', 'MISSED_CALLS_EMAIL_ADDRESS', 'HOST', 'ALICE_NUMBER',
+  'BOB_NUMBER'];
+envVariables.forEach(function (variableName) {
+  if (!process.env[variableName]) {
+    exitErrorHandler(variableName + ' variable is not set on your environment. Please check your environment variables or your .env file from .env.example');
+  }
+});
 
 mongoose.connect(dbConnection());
 mongoose.Promise = require('bluebird');
