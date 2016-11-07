@@ -71,7 +71,7 @@ uses a MongoDB database to log phone calls which were not assisted.
    $ ngrok http 3000
    ```
 
-   Once ngrok is running open up your browser and go to your ngrok URL. It will look something like this:
+   Once ngrok is running open up your browser and go to your Ngrok URL. It will look something like this:
 
    `http://<sub-domain>.ngrok.io/`
 
@@ -111,8 +111,8 @@ uses a MongoDB database to log phone calls which were not assisted.
    you should be redirected to voice mail and leave a message. The transcription
    of that message should be sent to the email you specified in your environment variables.
 
-1. Each time a worker misses a call, their activity is changed to offline. Right after they
-   should receive a notification, via SMS, saying that they missed the call. In order to go
+1. Each time a worker misses a call, their activity is changed to offline. Right after that, they
+   should receive a notification via SMS, saying that they missed the call. In order to go
    back online they can reply with `On`. They can as well reply with `Off` in order
    to go back to offline status.
 
