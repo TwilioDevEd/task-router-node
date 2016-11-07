@@ -12,7 +12,7 @@ basically a call center created with the Task Router API of Twilio. This example
 uses a MongoDB database to log phone calls which were not assisted.
 
 
-[Read the full tutorial here](//www.twilio.com/docs/tutorials/walkthrough/task-router/node/express)
+[Read the full tutorial here](https://www.twilio.com/docs/tutorials/walkthrough/dynamic-call-center/node/express)
 
 ### Prerequisites
 
