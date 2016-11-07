@@ -8,18 +8,18 @@
       a product, then be connected to a specialist for that product. If no one
       is available our customer's number will be saved so that our agent can
       call them back.
-    
+
       ### This is what the application does at a high level:
 
-      * Configure a workspace using the Twilio [TaskRouter REST API][api-main].  
+      * Configure a workspace using the Twilio [TaskRouter REST API][api-main].
       * Listen for incoming calls and let the user select a product
-      with the dial pad.  
+      with the dial pad.
       * Create a Task with the selected product and let
-      TaskRouter handle it.  
+      TaskRouter handle it.
       * Store missed calls so agents can return the
-      call to customers.  
+      call to customers.
       * Redirect users to a voice mail when no one
-      answers the call.  
+      answers the call.
       * Allow agents to change their status
       (Available/Offline) via SMS.
 
@@ -50,7 +50,7 @@
       * [Task Queues][queues-doc] - Holds Tasks to be consumed by a set of Workers
       * [Workflows][workflows-doc] - Responsible for placing Tasks into Task Queues
       * [Activities][activities-doc] - Possible states of a Worker. Eg: idle, offline, busy
-      
+
       In order to build a client for this API, we need a `TWILIO_ACCOUNT_SID`
       and `TWILIO_AUTH_TOKEN` which you can find on [Twilio
       Console](//www.twilio.com/console). The function `buildClient`
@@ -79,7 +79,7 @@
       Before creating a workspace, we need to delete any others with the same
       `friendlyName` as the one we are trying to create. In order to create a
       workspace we need to provide a `friendlyName` and a `eventCallbackUrl`
-      where a requests will be made every time an event is triggered in our workspace.
+      where a request will be made every time an event is triggered in our workspace.
 
       ---
       **See Also:**
@@ -164,8 +164,8 @@
 
       The endpoint will then process the request and generate a TwiML response.
       We'll use the [Say](//www.twilio.com/docs/api/twiml/say) verb to give the
-      user product alternatives, and a key they can press in order to select
-      one. The [Gather](//www.twilio.com/docs/api/twiml/gather) verb allows us
+      user product alternatives they can select by pressing a key. The
+      [Gather](//www.twilio.com/docs/api/twiml/gather) verb allows us
       to capture the user's key press.
 
       ---
@@ -227,7 +227,7 @@
       notifications or make a call.
 
       Since we created this Task during a voice call with an `Enqueue` verb,
-      let's [instruct TaskRouter to dequeue][dequeue-section] the call and dial
+      lets [instruct TaskRouter to dequeue][dequeue-section] the call and dial
       a Worker. If we do not specify a `to` parameter with a
       phone number, TaskRouter will pick the Worker's `contact_uri` attribute.
 
@@ -251,7 +251,7 @@
       This endpoint will be called after each [TaskRouter Event][event-types]
       is triggered. In our application, we are trying to collect missed calls,
       so we would like to handle the `workflow.timeout` event. This event is
-      triggered when the Task waits more than the limit set on Workflow
+      triggered when the Task waits more than the limit set on the Workflow
       Configuration-- or rather when no worker is available.
 
       Here we use TwilioRestClient to route this call to a [Voicemail

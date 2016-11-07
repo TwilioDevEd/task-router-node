@@ -17,15 +17,15 @@ is available our customer&#39;s number will be saved so that our agent can
 call them back.</p>
 <h3 id="this-is-what-the-application-does-at-a-high-level-">This is what the application does at a high level:</h3>
 <ul>
-<li>Configure a workspace using the Twilio <a href="//www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.  </li>
+<li>Configure a workspace using the Twilio <a href="//www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter REST API</a>.</li>
 <li>Listen for incoming calls and let the user select a product
-with the dial pad.  </li>
+with the dial pad.</li>
 <li>Create a Task with the selected product and let
-TaskRouter handle it.  </li>
+TaskRouter handle it.</li>
 <li>Store missed calls so agents can return the
-call to customers.  </li>
+call to customers.</li>
 <li>Redirect users to a voice mail when no one
-answers the call.  </li>
+answers the call.</li>
 <li>Allow agents to change their status
 (Available/Offline) via SMS.</li>
 </ul>
@@ -65,7 +65,7 @@ configures and returns a TaskRouterClient, which is provided by the
 <p>Before creating a workspace, we need to delete any others with the same
 <code>friendlyName</code> as the one we are trying to create. In order to create a
 workspace we need to provide a <code>friendlyName</code> and a <code>eventCallbackUrl</code>
-where a requests will be made every time an event is triggered in our workspace.</p>
+where a request will be made every time an event is triggered in our workspace.</p>
 <hr>
 <p><strong>See Also:</strong></p>
 <ul>
@@ -136,8 +136,8 @@ Task Queue.</li>
 URL specified on the <a href="//www.twilio.com/console/phone-numbers/incoming">number&#39;s configuration</a>.</p>
 <p>The endpoint will then process the request and generate a TwiML response.
 We&#39;ll use the <a href="//www.twilio.com/docs/api/twiml/say">Say</a> verb to give the
-user product alternatives, and a key they can press in order to select
-one. The <a href="//www.twilio.com/docs/api/twiml/gather">Gather</a> verb allows us
+user product alternatives they can select by pressing a key. The
+<a href="//www.twilio.com/docs/api/twiml/gather">Gather</a> verb allows us
 to capture the user&#39;s key press.</p>
 <hr>
 <p><strong>See Also:</strong></p>
@@ -187,7 +187,7 @@ component of building a TaskRouter application as we can instruct how the
 Worker will handle a Task. We could send a text, e-mail, push
 notifications or make a call.</p>
 <p>Since we created this Task during a voice call with an <code>Enqueue</code> verb,
-let&#39;s <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">instruct TaskRouter to dequeue</a> the call and dial
+lets <a href="//www.twilio.com/docs/api/taskrouter/handling-assignment-callbacks#dequeue-call">instruct TaskRouter to dequeue</a> the call and dial
 a Worker. If we do not specify a <code>to</code> parameter with a
 phone number, TaskRouter will pick the Worker&#39;s <code>contact_uri</code> attribute.</p>
 <p>We also send a <code>post_work_activity_sid</code> which will tell TaskRouter which
@@ -202,7 +202,7 @@ Activity to assign this worker after the call ends.</p>
 <p>This endpoint will be called after each <a href="//www.twilio.com/docs/api/taskrouter/events#event-types">TaskRouter Event</a>
 is triggered. In our application, we are trying to collect missed calls,
 so we would like to handle the <code>workflow.timeout</code> event. This event is
-triggered when the Task waits more than the limit set on Workflow
+triggered when the Task waits more than the limit set on the Workflow
 Configuration-- or rather when no worker is available.</p>
 <p>Here we use TwilioRestClient to route this call to a <a href="//www.twilio.com/labs/twimlets/voicemail">Voicemail
 Twimlet</a>. Twimlets are tiny web applications for
