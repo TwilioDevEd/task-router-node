@@ -1,7 +1,5 @@
 'use strict';
 
-require('../spec-helper');
-
 var expect = require('chai').expect,
   supertest = require('supertest'),
   cheerio = require('cheerio'),

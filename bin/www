@@ -8,8 +8,10 @@ var app = require('../app');
 var debug = require('debug')('task-router-node:server');
 var http = require('http');
 var mongoose = require('mongoose');
-var dbConnection = require('../lib/db-connection');
 var workspace = require('../lib/workspace');
+
+// connect db
+require('../lib/db-connection')();
 
 /**
  * Get port from environment and store in Express.
@@ -110,6 +112,3 @@ envVariables.forEach(function (variableName) {
     exitErrorHandler(variableName + ' variable is not set on your environment. Please check your environment variables or your .env file from .env.example');
   }
 });
-
-mongoose.connect(dbConnection());
-mongoose.Promise = require('bluebird');
