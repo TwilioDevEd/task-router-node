@@ -1,7 +1,5 @@
 'use strict';
 
-require('../spec-helper');
-
 var expect = require('chai').expect,
   supertest = require('supertest'),
   MissedCall = require('../../models/missed-call'),
@@ -110,4 +108,3 @@ describe('TaskRouter processed an event', function() {
     });
   });
 });
-
