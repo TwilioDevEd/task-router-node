@@ -6,42 +6,45 @@
 
 [![Build Status](https://travis-ci.org/TwilioDevEd/task-router-node.svg?branch=master)](https://travis-ci.org/TwilioDevEd/task-router-node)
 
-Use Twilio to provide your user with multiple options through phone calls, so
-they can be assisted by an agent specialized in the chosen topic. This is
-basically a call center created with the Task Router API of Twilio. This example
-uses a MongoDB database to log phone calls which were not assisted.
-
+Increase your rate of response by automating the workflows that are key to your business. In this tutorial, learn how to build a ready-for-scale automated SMS workflow, for a vacation rental company.
 
 [Read the full tutorial here](https://www.twilio.com/docs/tutorials/walkthrough/dynamic-call-center/node/express)
 
 ### Prerequisites
+  First you need to install
+  - [Node.js](http://nodejs.org/) which should also install [npm](https://www.npmjs.com/).
+  - [MongoDB](https://www.mongodb.org/)
 
-1. [Node](http://nodejs.org/)
-1. [MongoDb](http://docs.mongodb.org/manual/installation/)
-1. A Twilio account with a verified [phone number][twilio-phone-number]. (Get a
-   [free account](https://www.twilio.com/try-twilio?utm_campaign=tutorials&utm_medium=readme)
-   here.) If you are using a Twilio Trial Account, you can learn all about it
-   [here](https://www.twilio.com/help/faq/twilio-basics/how-does-twilios-free-trial-work).
+### Create a TwiML App
 
+  This project is configured to use a **TwiML App**, which allows us to easily set the voice URLs for all Twilio phone numbers we purchase in this app.
+
+  [Create a new TwiML app](https://www.twilio.com/console/phone-numbers/dev-tools/twiml-apps/add) and use its `Sid` as the `TWILIO_APP_SID` environment variable wherever you run this app.
+
+  ![Creating a TwiML App](http://howtodocs.s3.amazonaws.com/call-tracking-twiml-app.gif)
+
+  See the end of the "Local development" section for details on the exact URL to use in your TwiML app.
+
+  Once you have created your TwiML app, [configure your Twilio phone number](https://www.twilio.com/help/faq/twilio-client/how-do-i-create-a-twiml-app). If you don't have a Twilio phone number yet, you can purchase a new number in your [Twilio Account Dashboard](https://www.twilio.com/console/phone-numbers/search).
 
 ### Local Development
 
 1. First clone this repository and `cd` into it.
 
-   ```
-   $ git clone git@github.com:TwilioDevEd/task-router-node.git
-   $ cd task-router-node
-   ```
+  ```bash
+  $ git clone git@github.com:TwilioDevEd/task-router-node.git
+  $ cd task-router-node
+  ```
 
-1. Copy the sample configuration file and edit it to match your configuration.
-
+1. Copy the sample configuration file and edit it to match your configuration
   ```bash
   $ cp .env.example .env
   ```
+  You can find your `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN` in your
+  [Twilio Account Settings](https://www.twilio.com/console).
+  You will also need a `TWILIO_PHONE_NUMBER`, which you may find [here](https://www.twilio.com/console/phone-numbers/incoming).
 
- You can find your `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN` in your
- [Twilio Account Settings](https://www.twilio.com/user/account/settings).
- You will also need a `TWILIO_NUMBER`, which you may find [here](https://www.twilio.com/user/account/phone-numbers/incoming).
+  Run `source .env` to export the environment variables
 
 1. Install dependencies.
 
@@ -63,41 +66,37 @@ uses a MongoDB database to log phone calls which were not assisted.
 
 1. Expose your local web server to the internet using ngrok.
 
-   You can click [here](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-use-ngrok-when-testing-webhooks.html)
-   for more details. This step is important because the application won't
-   work as expected if you run it using `localhost`.
+  You can click [here](https://www.twilio.com/blog/2015/09/6-awesome-reasons-to-use-ngrok-when-testing-webhooks.html)
+  for more details. This step is important because the application won't
+  work as expected if you run it using `localhost`.
 
-   ```bash
-   $ ngrok http 3000
-   ```
+  ```bash
+  $ ngrok http 3000
+  ```
 
-   Once ngrok is running open up your browser and go to your ngrok URL. It will look something like this:
+  Once ngrok is running open up your browser and go to your ngrok URL. It will look something like this:
 
-   `http://<sub-domain>.ngrok.io/`
+  `http://<sub-domain>.ngrok.io/`
 
 1. Configure Twilio to call your webhooks.
 
-   You will also need to configure Twilio to call your application via POST when
-   phone calls are received on your _Twilio Number_. The configuration of
-   **Voice** should look something like this:
+  You will also need to configure Twilio to call your application via POST when
+  phone calls are received on your _Twilio Number_. The configuration of
+  **Voice** should look something like this:
 
-   ```
-   http://<sub-domain>.ngrok.io/call/incoming
-   ```
+  ```
+  http://<sub-domain>.ngrok.io/call/incoming
+  ```
 
-   The configuration for **Messaging** should look like this:
+  The configuration for **Messaging** should look like this:
 
-   ```
-   http://<sub-domain>.ngrok.io/sms/incoming
-   ```
+  ```
+  http://<sub-domain>.ngrok.io/sms/incoming
+  ```
 
-   ![Configuring](http://howtodocs.s3.amazonaws.com/twilio-number-config-all-med.gif)
+  ![Configuring](http://howtodocs.s3.amazonaws.com/twilio-number-config-all-med.gif)
 
 ## How to Demo
-
-1. First make sure you have exported all the required environment variables from
-   the `.env.example` file. Bob and Alice's number should be two different numbers
-   where you can receive calls and SMSs.
 
 1. When you run the app, a new workspace will be configured. Once that is done,
    you are ready to call your [Twilio Number](https://www.twilio.com/console/phone-numbers/incoming)
