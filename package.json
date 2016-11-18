@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "jshint": "node_modules/jshint/bin/jshint .",
-    "test": "export NODE_ENV=test && export TWILIO_ACCOUNT_SID=my-account-sid && export TWILIO_AUTH_TOKEN=my-auth-token && export TWILIO_NUMBER=my-twilio-number && mocha spec --recursive"
+    "test": "NODE_ENV=test mocha spec --recursive"
   },
   "description": "Task Router: automate the routing of calls from customers to your support agents using Twilio, Node.js and Express",
   "author": {
