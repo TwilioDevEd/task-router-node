@@ -431,7 +431,7 @@ context('lib/workspace', function() {
     });
   });
 
-  describe('#createBobWorker', function() {
+  describe('#createWorker', function() {
     it('creates a bob worker', function() {
       workspace = require('../../lib/workspace')();
 
@@ -444,28 +444,11 @@ context('lib/workspace', function() {
 
       return workspace.initClient()
         .then(function() {
-          return workspace.createBobWorker()
-          .then(function(worker) {
-            expect(worker.constructor.name).to.be.equal('WorkerInstance');
-          });
-        });
-    });
-  });
-
-  describe('#createAliceWorker', function() {
-    it('creates a Alice worker', function() {
-      workspace = require('../../lib/workspace')();
-
-      createWorkspaceReq();
-      getWorkspacesReq();
-      getWorkspacesReq();
-      deleteWorkspaceReq();
-      getActivitiesReq();
-      createWorkerReq();
-
-      return workspace.initClient()
-        .then(function() {
-          return workspace.createAliceWorker()
+          return workspace.createWorker({
+            name: 'Bob',
+            phoneNumber: process.env.BOB_NUMBER,
+            products: ['ProgrammableSMS'],
+          })
           .then(function(worker) {
             expect(worker.constructor.name).to.be.equal('WorkerInstance');
           });
