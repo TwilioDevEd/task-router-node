@@ -33,7 +33,6 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.3.3",
-    "dotenv": "^2.0.0",
     "dotenv-safe": "^3.0.0",
     "express": "~4.14.0",
     "express-session": "^1.14.2",
