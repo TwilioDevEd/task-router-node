@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "jshint": "node_modules/jshint/bin/jshint . ",
-    "test": "TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX MONGO_URL=mongodb://localhost:27017/task-router TWILIO_NUMBER=+15555555555 MISSED_CALLS_EMAIL_ADDRESS=your@email.here HOST=https://yourdomain.com ALICE_NUMBER=+5213300000000 BOB_NUMBER=+5213300000000 NODE_ENV=test ./node_modules/.bin/mocha spec --recursive"
+    "test": "TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX MONGO_URI=mongodb://localhost:27017/task-router TWILIO_NUMBER=+15555555555 MISSED_CALLS_EMAIL_ADDRESS=your@email.here HOST=https://yourdomain.com ALICE_NUMBER=+5213300000000 BOB_NUMBER=+5213300000000 NODE_ENV=test ./node_modules/.bin/mocha lib/db-connection spec --recursive --timeout 5000"
   },
   "description": "Task Router: automate the routing of calls from customers to your support agents using Twilio, Node.js and Express",
   "author": {
