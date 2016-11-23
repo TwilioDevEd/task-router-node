@@ -90,12 +90,14 @@ function onListening() {
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
   console.log("Configuring a Twilio's TaskRouter Workspace");
-  workspace.setup(exitErrorHandler).then(function (data) {
+  workspace.setup().then(function (data) {
     app.set('workerInfo', data[0]);
     app.set('workspaceInfo', data[1]);
+    console.log(data)
     console.log('Application configured!');
     console.log('Call your Twilio number at: ' + process.env.TWILIO_NUMBER);
-  });
+  })
+  .catch(exitErrorHandler);
 }
 
 function exitErrorHandler(error) {
