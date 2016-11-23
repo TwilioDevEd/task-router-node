@@ -329,7 +329,7 @@ function createWorkflowsReq() {
     });
 }
 
-context.only('lib/workspace', function() {
+context('lib/workspace', function() {
   beforeEach(function() {
     // for the purpose of resetting any methods that were mocked.
     decache('../../lib/workspace');
