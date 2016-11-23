@@ -20,3 +20,7 @@ addons:
 script:
 - npm run jshint
 - npm test
+
+cache:
+  directories:
+    - node_modules
