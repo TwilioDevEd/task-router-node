@@ -268,7 +268,7 @@ function createTaskQueueReq() {
       var pairs = body.match(/name\=\"([a-zA-Z0-9]*)\"\s{4}(.*)/g);
 
       var newPairs = pairs.map(function(pairStr) {
-        var match = pairStr.match(/name\=\"([a-zA-Z0-9]*)\"\s{4}(.*)/)
+        var match = pairStr.match(/name\=\"([a-zA-Z0-9]*)\"\s{4}(.*)/);
         var result = {};
 
         result[match[1]] = match[2];
@@ -300,7 +300,7 @@ function createTaskQueueReq() {
             "reservation_activity":"https://taskrouter.twilio.com/v1/Workspaces/WS839a1163b2a7fd63eb41bee2d96fcc77/Activities/WAcb9ee7acf668714ced126b16f2b80aae",
             "workspace":"https://taskrouter.twilio.com/v1/Workspaces/WS839a1163b2a7fd63eb41bee2d96fcc77"
          }
-      }
+      };
     });
 }
 
@@ -323,9 +323,9 @@ function createWorkflowsReq() {
         "date_updated":"2016-11-22T21:46:49Z",
         "url":"https://taskrouter.twilio.com/v1/Workspaces/WSb254c83bb3b6e33a78ce321a8ebade23/Workflows/WW73d461b83545e3613192b29681696dfc",
         "links":{
-        "workspace":"https://taskrouter.twilio.com/v1/Workspaces/WSb254c83bb3b6e33a78ce321a8ebade23"
+        "workspace":"https://taskrouter.twilio.com/v1/Workspaces/WSb254c83bb3b6e33a78ce321a8ebade23",
         }
-      }
+      };
     });
 }
 
@@ -448,7 +448,7 @@ context.only('lib/workspace', function() {
           .then(function(worker) {
             expect(worker.constructor.name).to.be.equal('WorkerInstance');
           });
-        })
+        });
     });
   });
 
@@ -469,7 +469,7 @@ context.only('lib/workspace', function() {
           .then(function(worker) {
             expect(worker.constructor.name).to.be.equal('WorkerInstance');
           });
-        })
+        });
     });
   });
 
@@ -493,7 +493,7 @@ context.only('lib/workspace', function() {
           .then(function(activities) {
             expect(activities[0].constructor.name).to.be.equal('ActivityInstance');
           });
-        })
+        });
     });
   });
 
@@ -535,7 +535,7 @@ context.only('lib/workspace', function() {
           // expect(workspaceInfo.activities.offline).to.be.equals('WAc30aec85a6ffe44693da7a0f84be5846');
           // expect(workerInfo[process.env.ALICE_NUMBER]).to.be.equals('WKfd6a35e83f81e77d723894ce01c89091');
           // expect(workerInfo[process.env.BOB_NUMBER]).to.be.equals('WK9d3cc6f1b18a93496b1d9768b25ba5e3');
-        })
+        });
     });
   });
 });
