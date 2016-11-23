@@ -44,8 +44,6 @@ Increase your rate of response by automating the workflows that are key to your 
   [Twilio Account Settings](https://www.twilio.com/console).
   You will also need a `TWILIO_PHONE_NUMBER`, which you may find [here](https://www.twilio.com/console/phone-numbers/incoming).
 
-  Run `source .env` to export the environment variables
-
 1. Install dependencies.
 
   ```bash
