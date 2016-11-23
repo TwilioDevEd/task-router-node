@@ -8,10 +8,10 @@ var app = require('../app');
 var debug = require('debug')('task-router-node:server');
 var http = require('http');
 var mongoose = require('mongoose');
-var workspace = require('../lib/workspace');
+var workspace = require('../lib/workspace')();
 
 // connect db
-require('../lib/db-connection')();
+require('../lib/db-connection');
 
 /**
  * Get port from environment and store in Express.
