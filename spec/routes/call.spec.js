@@ -109,7 +109,7 @@ describe('missed calls', function () {
             expect($('tr td a').attr('href')).to.equal('tel:+1234');
           })
         .expect(200);
-        })
+      });
     });
   });
 });

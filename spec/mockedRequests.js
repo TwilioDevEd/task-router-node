@@ -354,6 +354,6 @@ module.exports = function() {
       createWorkerReq();
       createWorkerReq();
       createWorkflowsReq();
-    }
-  }
-}
+    },
+  };
+};

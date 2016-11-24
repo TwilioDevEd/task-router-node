@@ -21,7 +21,7 @@ context('lib/workspace', function() {
   });
 
   describe('#deleteByFriendlyName', function() {
-    it('delete workspace by name', function() {
+    it('deletes workspace by name', function() {
       workspace.findByFriendlyName = sinon.promise();
 
       workspace.initWorkspace = sinon.stub()
@@ -39,7 +39,7 @@ context('lib/workspace', function() {
   });
 
   describe('#createWorkspace', function() {
-    it('create workspace whether exists or not', function() {
+    it('creates workspace whether exists or not', function() {
       mockedRequests.createWorkspaceReq();
 
       return workspace.createWorkspace()
@@ -50,7 +50,7 @@ context('lib/workspace', function() {
   });
 
   describe('#initWorkspace', function() {
-    it('delete workspace if it exists', function() {
+    it('deletes workspace if it exists', function() {
       workspace.findByFriendlyName = sinon.promise()
                                       .resolves({sid: 'workspace_sid'});
 
@@ -66,7 +66,7 @@ context('lib/workspace', function() {
         });
     });
 
-    it('create workspace whether exists or not', function() {
+    it('creates workspace whether exists or not', function() {
 
       workspace.findByFriendlyName = sinon.promise()
                                       .resolves({sid: 'workspace_sid'});
@@ -84,7 +84,7 @@ context('lib/workspace', function() {
   });
 
   describe('#findByFriendlyName', function() {
-    it('find existing workspace by name', function() {
+    it('finds existing workspace by name', function() {
       mockedRequests.getWorkspacesReq();
 
       return workspace.findByFriendlyName(WORKSPACE_NAME)
@@ -95,7 +95,7 @@ context('lib/workspace', function() {
   });
 
   describe('#initWorkspace', function() {
-    it('create workspace instance', function() {
+    it('creates workspace instance', function() {
       mockedRequests.getWorkspacesReq();
 
       return workspace.findByFriendlyName(WORKSPACE_NAME)
