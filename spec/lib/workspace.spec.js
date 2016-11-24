@@ -377,50 +377,33 @@ context('lib/workspace', function() {
       workspace.createWorkspace = sinon.promise()
                                     .resolves({sid: 'workspace_sid'});
 
-      return workspace.createClient()
+      createWorkspaceReq();
+
+      return workspace.initWorkspace()
         .then(function() {
           expect(workspace.deleteByFriendlyName.calledOnce);
         });
     });
 
     it('create workspace whether exists or not', function() {
-      workspace = require('../../lib/workspace')();
+
       workspace.findByFriendlyName = sinon.promise()
                                       .resolves({sid: 'workspace_sid'});
 
-      workspace.deleteByFriendlyName = sinon.promise().resolves();
-      workspace.createWorkspace = sinon.promise()
-                                    .resolves({sid: 'workspace_sid'});
-
-      return workspace.createClient()
-        .then(function() {
-          expect(workspace.createWorkspace.calledOnce);
-        });
-    });
-  });
-
-  describe('#createWorkspace', function() {
-    it('creates a new workspace', function() {
-      workspace = require('../../lib/workspace')();
+      workspace.deleteByFriendlyName = sinon.promise().resolves({});
 
       createWorkspaceReq();
-      getWorkspacesReq();
-      deleteWorkspaceReq();
 
-      return workspace.deleteByFriendlyName(WORKSPACE_NAME)
-        .then(function() {
-          return workspace.createWorkspace()
-          .then(function(workspace) {
-            expect(workspace.constructor.name).to.be.equal('WorkspaceInstance');
-          });
-        });
+      return workspace.initWorkspace()
+      .then(function(newWorkspace) {
+        expect(workspace.deleteByFriendlyName.calledOnce);
+        expect(newWorkspace.constructor.name).to.be.equal('WorkspaceInstance');
+      });
     });
   });
 
   describe('#findByFriendlyName', function() {
     it('find existing workspace by name', function() {
-      workspace = require('../../lib/workspace')();
-
       getWorkspacesReq();
 
       return workspace.findByFriendlyName(WORKSPACE_NAME)
@@ -432,8 +415,6 @@ context('lib/workspace', function() {
 
   describe('#initWorkspace', function() {
     it('create workspace instance', function() {
-      workspace = require('../../lib/workspace')();
-
       getWorkspacesReq();
 
       return workspace.findByFriendlyName(WORKSPACE_NAME)
@@ -445,8 +426,6 @@ context('lib/workspace', function() {
 
   describe('#createWorker', function() {
     it('creates a bob worker', function() {
-      workspace = require('../../lib/workspace')();
-
       createWorkspaceReq();
       getWorkspacesReq();
       getWorkspacesReq();
@@ -470,8 +449,6 @@ context('lib/workspace', function() {
 
   describe('#createWorkflowActivities', function() {
     it('creates necessary workflow activities', function() {
-      var workspace = require('../../lib/workspace')();
-
       createWorkspaceReq();
       getWorkspacesReq();
       getWorkspacesReq();
@@ -497,11 +474,6 @@ context('lib/workspace', function() {
 
   describe('#setup', function () {
     it('returns workspace information', function () {
-      workspace = require('../../lib/workspace')();
-      process.env.ALICE_NUMBER = '+551111111111';
-      process.env.BOB_NUMBER = '+201111111111';
-      process.env.HOST = 'https://ngrok.io';
-
       getWorkspacesReq();
       getWorkspacesReq();
       deleteWorkspaceReq();
