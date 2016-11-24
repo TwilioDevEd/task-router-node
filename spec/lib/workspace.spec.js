@@ -357,9 +357,19 @@ context('lib/workspace', function() {
     });
   });
 
-  describe('#createClient', function() {
+  describe('#createWorkspace', function() {
+    it('create workspace whether exists or not', function() {
+      createWorkspaceReq();
+
+      return workspace.createWorkspace()
+      .then(function(workspace) {
+        expect(workspace.constructor.name).to.be.equal('WorkspaceInstance');
+      });
+    });
+  });
+
+  describe('#initWorkspace', function() {
     it('delete workspace if it exists', function() {
-      workspace = require('../../lib/workspace')();
       workspace.findByFriendlyName = sinon.promise()
                                       .resolves({sid: 'workspace_sid'});
 
