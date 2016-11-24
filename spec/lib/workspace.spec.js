@@ -140,20 +140,21 @@ context('lib/workspace', function() {
   });
 
 
-  describe('#setup', function () {
+  describe('#setup', function() {
     it('returns workspace information', function () {
       mockedRequests.setupRequests();
 
       return workspace.setup()
-        .then(function (data) {
-          var workerInfo = data[0],
-              workspaceInfo = data[1];
+        .then(function(data) {
+          var workerInfo = data[0];
+          var workspaceInfo = data[1];
+
           expect(workspaceInfo.workspaceSid.match(/^WS{32}/));
           expect(workspaceInfo.workflowSid.match(/^WW{32}/));
-          // expect(workspaceInfo.activities.idle).to.be.equals('WAce62b8a472c363a49bd604f0d226cd8d');
-          // expect(workspaceInfo.activities.offline).to.be.equals('WAc30aec85a6ffe44693da7a0f84be5846');
-          // expect(workerInfo[process.env.ALICE_NUMBER]).to.be.equals('WKfd6a35e83f81e77d723894ce01c89091');
-          // expect(workerInfo[process.env.BOB_NUMBER]).to.be.equals('WK9d3cc6f1b18a93496b1d9768b25ba5e3');
+          expect(workspaceInfo.activities.idle.match(/^WA{32}/));
+          expect(workspaceInfo.activities.offline.match(/^WA{32}/));
+          expect(workerInfo[process.env.ALICE_NUMBER].match(/^WK{32}/));
+          expect(workerInfo[process.env.BOB_NUMBER].match(/^WK{32}/));
         });
     });
   });
