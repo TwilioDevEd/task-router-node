@@ -35,7 +35,7 @@ answers the call.</li>
 <li><a href="//expressjs.com/en/starter/installing.html">Installing Express</a></li>
 <li><a href="//www.twilio.com/docs/libraries/node">The Twilio Node Helper Library</a></li>
 </ul>
-</div><div data-title="Configuring the Workspace" data-file="lib/workspace.js" data-highlight="5-9, 217-230" class="step"><h2 id="configuring-the-workspace">Configuring the Workspace</h2>
+</div><div data-title="Configuring the Workspace" data-file="lib/workspace.js" data-highlight="7-11, 202-217" class="step"><h2 id="configuring-the-workspace">Configuring the Workspace</h2>
 <p>In order to instruct TaskRouter to handle the Tasks, we need to
 configure a Workspace. We can do this in the <a href="//www.twilio.com/console/taskrouter/workspaces">TaskRouter
 Console</a> or
@@ -61,7 +61,7 @@ configures and returns a TaskRouterClient, which is provided by the
 <li><a href="//www.twilio.com/docs/api/taskrouter/rest-api">TaskRouter: REST API Reference</a></li>
 <li><a href="//twilio.github.io/twilio-node/">Twilio Node.js API Documentation</a></li>
 </ul>
-</div><div data-title="Creating a Workspace" data-file="lib/workspace.js" data-highlight="267-288" class="step"><h2 id="creating-a-workspace">Creating a Workspace</h2>
+</div><div data-title="Creating a Workspace" data-file="lib/workspace.js" data-highlight="239-244" class="step"><h2 id="creating-a-workspace">Creating a Workspace</h2>
 <p>Before creating a workspace, we need to delete any others with the same
 <code>friendlyName</code> as the one we are trying to create. In order to create a
 workspace we need to provide a <code>friendlyName</code> and a <code>eventCallbackUrl</code>
@@ -72,7 +72,7 @@ where a request will be made every time an event is triggered in our workspace.<
 <li><a href="//www.twilio.com/docs/api/taskrouter/workspaces">TaskRouter REST API: Workspace</a></li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/workspaces#action-create">Creating a Workspace</a></li>
 </ul>
-</div><div data-title="Creating the Workers" data-file="lib/workspace.js" data-highlight="116-129" class="step"><h2 id="creating-the-workers">Creating the Workers</h2>
+</div><div data-title="Creating the Workers" data-file="lib/workspace.js" data-highlight="102-127" class="step"><h2 id="creating-the-workers">Creating the Workers</h2>
 <p>We&#39;ll create two workers, Bob and Alice. They each have two attributes:
 <code>contact_uri</code> a phone number and <code>products</code>, a list of products
 each worker is specialized in. We also need to specify an <code>activitySid</code>
@@ -86,7 +86,7 @@ available for incoming calls.</p>
 <ul>
 <li><a href="//www.twilio.com/docs/api/taskrouter/workers">TaskRouter REST API: Workers</a></li>
 </ul>
-</div><div data-title="Creating the Task Queues" data-file="lib/workspace.js" data-highlight="83-114" class="step"><h2 id="creating-the-task-queues">Creating the Task Queues</h2>
+</div><div data-title="Creating the Task Queues" data-file="lib/workspace.js" data-highlight="69-100" class="step"><h2 id="creating-the-task-queues">Creating the Task Queues</h2>
 <p>Next, we set up the Task Queues. Each with a
 <code>friendlyName</code> and a <code>targetWorkers</code>, which is an expression to match Workers.
 Our Task Queues are:</p>
@@ -105,7 +105,7 @@ expression here.</li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/taskqueues">TaskRouter REST API: Task Queues</a></li>
 <li><a href="//www.twilio.com/docs/api/taskrouter/taskqueues#target-workers">TargetWorkers&#39;s Expressions</a></li>
 </ul>
-</div><div data-title="Creating a Workflow" data-file="lib/workspace.js" data-highlight="53-81" class="step"><h2 id="creating-a-workflow">Creating a Workflow</h2>
+</div><div data-title="Creating a Workflow" data-file="lib/workspace.js" data-highlight="39-67" class="step"><h2 id="creating-a-workflow">Creating a Workflow</h2>
 <p>Finally, we create the Workflow using the following parameters:</p>
 <ol>
 <li><code>friendlyName</code> as the name of a Workflow.</li>
