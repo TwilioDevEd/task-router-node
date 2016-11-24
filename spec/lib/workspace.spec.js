@@ -333,12 +333,14 @@ context('lib/workspace', function() {
   beforeEach(function() {
     // for the purpose of resetting any methods that were mocked.
     decache('../../lib/workspace');
+
+    workspace = require('../../lib/workspace')();
+
+    workspace.initClient();
   });
 
   describe('#deleteByFriendlyName', function() {
     it('delete workspace by name', function() {
-      workspace = require('../../lib/workspace')();
-
       workspace.findByFriendlyName = sinon.promise();
 
       workspace.initWorkspace = sinon.stub()
@@ -470,7 +472,9 @@ context('lib/workspace', function() {
       createActivitiesReq();
       getActivitiesReq();
 
-      return workspace.initClient()
+      workspace.initClient();
+
+      return workspace.initWorkspace()
         .then(function() {
           return workspace.createWorkflowActivities()
           .then(function(activities) {
