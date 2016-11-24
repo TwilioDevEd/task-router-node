@@ -8,8 +8,10 @@ var app = require('../app');
 var debug = require('debug')('task-router-node:server');
 var http = require('http');
 var mongoose = require('mongoose');
-var dbConnection = require('../lib/db-connection');
-var workspace = require('../lib/workspace');
+var workspace = require('../lib/workspace')();
+
+// connect db
+require('../lib/db-connection');
 
 /**
  * Get port from environment and store in Express.
@@ -88,12 +90,14 @@ function onListening() {
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
   console.log("Configuring a Twilio's TaskRouter Workspace");
-  workspace.setup(exitErrorHandler).then(function (data) {
+  workspace.setup().then(function (data) {
     app.set('workerInfo', data[0]);
     app.set('workspaceInfo', data[1]);
+    console.log(data)
     console.log('Application configured!');
     console.log('Call your Twilio number at: ' + process.env.TWILIO_NUMBER);
-  });
+  })
+  .catch(exitErrorHandler);
 }
 
 function exitErrorHandler(error) {
@@ -110,6 +114,3 @@ envVariables.forEach(function (variableName) {
     exitErrorHandler(variableName + ' variable is not set on your environment. Please check your environment variables or your .env file from .env.example');
   }
 });
-
-mongoose.connect(dbConnection());
-mongoose.Promise = require('bluebird');

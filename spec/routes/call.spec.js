@@ -1,7 +1,5 @@
 'use strict';
 
-require('../spec-helper');
-
 var expect = require('chai').expect,
   supertest = require('supertest'),
   cheerio = require('cheerio'),
@@ -90,25 +88,27 @@ describe('TaskRouter matched a Task to a Worker', function () {
 
 describe('missed calls', function () {
 
-  beforeEach(function (done) {
-     MissedCall.remove({}, done);
+  beforeEach(function () {
+    return MissedCall.remove({});
   });
 
   describe('GET /', function () {
-    it('shows missed calls', function (done) {
-      MissedCall.create({
+    it('shows missed calls', function () {
+      return MissedCall.create({
         selectedProduct: 'ProgrammableSMS',
         phoneNumber: '+1234'
-      }, function(){
-        var testApp = supertest(app);
-        testApp
-        .get('/')
-        .expect(function (res) {
-          var $ = cheerio.load(res.text);
-          expect($('tr td strong').text()).to.equal('ProgrammableSMS');
-          expect($('tr td a').attr('href')).to.equal('tel:+1234');
-        })
-      .expect(200, done);
+      })
+        .then(function() {
+          var testApp = supertest(app);
+
+          return testApp
+          .get('/')
+          .expect(function(res) {
+            var $ = cheerio.load(res.text);
+            expect($('tr td strong').text()).to.equal('ProgrammableSMS');
+            expect($('tr td a').attr('href')).to.equal('tel:+1234');
+          })
+        .expect(200);
       });
     });
   });

@@ -1,6 +1,6 @@
 'use strict';
 
-require('dotenv').config({silent: true});
+require('dotenv-safe').load();
 
 var express = require('express'),
   app = express(),
