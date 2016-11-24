@@ -433,7 +433,7 @@ context('lib/workspace', function() {
       getActivitiesReq();
       createWorkerReq();
 
-      return workspace.initClient()
+      return workspace.initWorkspace()
         .then(function() {
           return workspace.createWorker({
             name: 'Bob',
