@@ -42,7 +42,7 @@ describe('user pressed a key', function () {
       app.set('workspaceInfo', { workflowSid: 'SID123', activities: { idle: 'SID123' } });
       testApp.post('/call/enqueue').send({ Digits: '1' }).expect(function (response) {
         var $ = cheerio.load(response.text);
-        expect($('enqueue task').text()).to.equal('{"selected_product": "ProgrammableSMS"}');
+        expect($('enqueue task').text()).to.equal('{"selected_product":"ProgrammableSMS"}');
       }).expect(200, done);
     });
 
@@ -51,7 +51,7 @@ describe('user pressed a key', function () {
       app.set('workspaceInfo', { workflowSid: 'SID123', activities: { idle: 'SID123' } });
       testApp.post('/call/enqueue').send({ 'Digits': '#' }).expect(function (response) {
         var $ = cheerio.load(response.text);
-        expect($('enqueue task').text()).to.equal('{"selected_product": "ProgrammableVoice"}');
+        expect($('enqueue task').text()).to.equal('{"selected_product":"ProgrammableVoice"}');
       }).expect(200, done);
     });
 
