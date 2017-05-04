@@ -1,7 +1,5 @@
 'use strict';
 
-require('../spec-helper');
-
 var expect = require('chai').expect,
   supertest = require('supertest'),
   MissedCall = require('../../models/missed-call'),
@@ -32,9 +30,9 @@ describe('TaskRouter processed an event', function() {
     mockery.disable();
   });
 
-  beforeEach(function (done) {
+  beforeEach(function () {
     this.taskAttributes = JSON.stringify({from: '+555', selected_product: 'Rockets', call_sid: 'callSid'});
-    MissedCall.remove({}, done);
+    return MissedCall.remove({});
   });
 
   describe('events webhook POSTs to /events', function() {
@@ -110,4 +108,3 @@ describe('TaskRouter processed an event', function() {
     });
   });
 });
-
