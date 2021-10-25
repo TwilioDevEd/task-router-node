@@ -4,7 +4,7 @@
 
 # Task Router - NodeJS/Express
 
-[![Build Status](https://travis-ci.org/TwilioDevEd/task-router-node.svg?branch=master)](https://travis-ci.org/TwilioDevEd/task-router-node)
+[![Node.js CI](https://github.com/TwilioDevEd/task-router-node/actions/workflows/node.js.yml/badge.svg)](https://github.com/TwilioDevEd/task-router-node/actions/workflows/node.js.yml)
 
 Increase your rate of response by automating the workflows that are key to your business. In this tutorial, learn how to build a ready-for-scale automated SMS workflow, for a vacation rental company.
 
