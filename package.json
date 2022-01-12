@@ -53,6 +53,6 @@
     "nock": "^9.0.2",
     "sinon": "^1.17.6",
     "sinon-promise": "^0.1.3",
-    "supertest": "^2.0.1"
+    "supertest": "^6.2.1"
   }
 }
