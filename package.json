@@ -32,7 +32,7 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.3.3",
     "dotenv-safe": "^3.0.0",
-    "express": "~4.14.0",
+    "express": "~4.17.3",
     "express-session": "^1.14.2",
     "lodash": "^4.17.2",
     "mongoose": "^4.6.8",
